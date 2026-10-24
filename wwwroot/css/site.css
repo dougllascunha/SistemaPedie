@@ -1,5 +1,15 @@
+:root {
+    --cor-letra: #f8f9fa;
+    --cor-fundo: rgba(253, 6, 179, 0.39);
+    --cor-htmlFundo: rgba(0, 0, 0, 0.575);
+    --cor-letraCard:black;
+    --cor--card:rgba(253, 253, 253, 0.808);
+}
 html {
   font-size: 14px;
+  background-color:var(--cor-htmlFundo);
+  position: relative;
+  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -7,25 +17,46 @@ html {
     font-size: 20px;
   }
 }
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem rgb(138, 255, 5), 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
   margin-bottom: 60px;
+  background-color:var(--cor-fundo);
+}
+.imagem-produto 
+{
+    height: 250px;
+    object-fit: contain;
+}
+h1
+{
+  color: var(--cor-letra);
+}
+#subtitulo
+{
+  color: var(--cor-letra);
+}
+.navbar {
+    background-color: #d63384;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.navbar-brand {
+    color:var(--cor-letra);
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.nav-link {
+    color:var(--cor-letra);
+}
+.card-body /*Cor das letras dentro do card*/
+{
+  color:var(--cor-letraCard);
+  background-color:var(--cor--card);
+  border: none;
+  border-radius: 20px;
+}
+.card
+{
+  background-color:transparent;
+  border: none ;
+}
+.nav-link{
+  margin: 40px;
 }

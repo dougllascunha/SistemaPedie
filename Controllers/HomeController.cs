@@ -15,15 +15,18 @@ public class HomeController : Controller
         }
 
     public IActionResult Index()
+
     {
-        return View();
+        var produtos = _context.Produtos.ToList();
+        return View(produtos);
     }
 
         public IActionResult TesteBanco()
         {
             var totalCategorias = _context.Categorias.Count();
+            var produtos = _context.Produtos.Count();
 
-            return Content($"Conexão OK! Categorias encontradas: {totalCategorias}");
+            return Content($"Conexão OK! Categorias encontradas: {totalCategorias}|Quantidade de produtos{produtos}");
         }
 
     public IActionResult Privacy()
