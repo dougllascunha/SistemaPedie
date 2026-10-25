@@ -62,7 +62,7 @@ public class CarrinhoController : Controller
             "Carrinho",
             JsonSerializer.Serialize(carrinho));
 
-        return RedirectToAction("Index");
+        return Redirect(Request.Headers["Referer"].ToString());
     }
     public IActionResult Aumentar(int id)
     {

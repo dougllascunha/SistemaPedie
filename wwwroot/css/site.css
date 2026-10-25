@@ -94,6 +94,7 @@ h1
 .btn{
   color: var(--cor-letraCard);
   background-color: var(--cor-fundo);
+  border: none;
 }
 .btn:hover{
   background-color: var(--cor--hover);
@@ -117,4 +118,29 @@ h1
 .btn-danger:hover{
   background-color: red;
   border: none;
+}
+/*
+Carrinho de compras
+*/
+p.letrasCarrinho{
+  font-size:30px ;
+}
+h4.letrasCarrinho{
+  font-size: 45px;
+}
+.tituloCarrinho{
+  text-align: center;
+  font-size: 70px;
+}
+.btn-sm {
+  font-size: 1.2rem;
+  padding: 10px 20px;
+}
+.qtdItens /*Numero entre o mais e o menos */
+{
+  font-size: 30px;
+}
+.btn-finalizar {
+    font-size: 1.5rem;
+    padding: 15px 50px;
 }
