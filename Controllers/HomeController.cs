@@ -9,26 +9,19 @@ public class HomeController : Controller
 {
     private readonly PedieDbContext _context;
 
-        public HomeController(PedieDbContext context)
-        {
-            _context = context;
-        }
+    public HomeController(PedieDbContext context)
+    {
+        _context = context;
+    }
 
     public IActionResult Index()
 
     {
-        var produtos = _context.Produtos.ToList();
-        return View(produtos);
+    var produtos = _context.Produtos 
+        .Where(p => p.Disponivel)// faz Só aparecer produtos que tem disponivel
+        .ToList();
+    return View(produtos);
     }
-
-        public IActionResult TesteBanco()
-        {
-            var totalCategorias = _context.Categorias.Count();
-            var produtos = _context.Produtos.Count();
-
-            return Content($"Conexão OK! Categorias encontradas: {totalCategorias}|Quantidade de produtos{produtos}");
-        }
-
     public IActionResult Privacy()
     {
         return View();

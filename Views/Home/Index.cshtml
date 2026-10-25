@@ -15,28 +15,40 @@
         <div class="col-md-4 mb-4">
             <div class="card h-100">
                 <div class="card-body">
+
+                    <h5 class="card-title">
+                        <p class="nomeProduto">@produto.Nome</p>
+                    </h5>
+
                     <img 
                     src="@produto.ImagemUrl"
                     alt="@produto.Nome"
                     class="card-img-top imagem-produto">
 
-                    <h5 class="card-title">
-                        <p>@produto.Nome</p>
-                    </h5>
 
-                    <p class="card-text">
-                        @produto.Descricao
-                    </p>
+                    
 
-                    <p>
-                        <strong>Preço:</strong>
+                    <p class="preco">
+                        
                         R$ @produto.Preco
                     </p>
 
-                    <p>
-                        <strong>Disponível</strong>
-                        @(produto.Disponivel ? "Sim" : "Não")
-                    </p>
+                    <form asp-controller="Carrinho"
+                        asp-action="Adicionar"
+                        method="post">
+
+                        <input type="hidden"
+                            name="id"
+                            value="@produto.IdProduto" />
+
+                            <button type="submit"
+                                    class="btn w-100">
+                                Adicionar ao Carrinho
+                            </button>
+
+                    </form>
+
+                    
                 </div>
             </div>
         </div>

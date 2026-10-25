@@ -20,7 +20,10 @@
                 <a class="navbar-brand"
                    asp-controller="Home"
                    asp-action="Index">
-                    Pediê
+
+                    <img src="~/imagens/LogoPedie.png"
+                    alt="Pediê"
+                    class="logo-navbar">
                 </a>
 
                 <div>
@@ -41,8 +44,10 @@
                     </a>
 
                     <a class="nav-link d-inline"
-                       href="#">
+                       asp-controller="Carrinho"
+                       asp-action="Index">
                         Carrinho
+                     
                     </a>
                 </div>
 
@@ -50,13 +55,13 @@
         </nav>
     </header>
 
-    <div class="container">
+    
 
-        <main>
+        <main class="container">
             @RenderBody()
         </main>
 
-    </div>
+    
 
     <footer class="text-center mt-5 mb-3">
         <p>

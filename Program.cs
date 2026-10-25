@@ -6,10 +6,13 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<PedieDbContext>
     (options =>options.UseSqlServer(
         builder.Configuration.GetConnectionString("PedieConexão")));
+//Parte para usar o carrinho 
 
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddSession();//carrinho
 
 var app = builder.Build();
 
@@ -23,6 +26,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseSession();//carrinho
 
 app.UseAuthorization();
 

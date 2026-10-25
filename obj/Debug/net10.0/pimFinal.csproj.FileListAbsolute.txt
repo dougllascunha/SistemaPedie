@@ -225,4 +225,4 @@ D:\PROGRAMAS\pimFinal\bin\Debug\net10.0\runtimes\win-x86\native\msalruntime_x86.
 D:\PROGRAMAS\pimFinal\obj\Debug\net10.0\pimFinal.csproj.AssemblyReference.cache
 D:\PROGRAMAS\pimFinal\obj\Debug\net10.0\pimFinal.csproj.Up2Date
 D:\PROGRAMAS\pimFinal\obj\Debug\net10.0\pimFinal.sourcelink.json
-D:\PROGRAMAS\pimFinal\obj\Debug\net10.0\compressed\7turx7ymvt-{0}-5egr3yb49e-5egr3yb49e.gz
+D:\PROGRAMAS\pimFinal\obj\Debug\net10.0\compressed\7turx7ymvt-{0}-a3mzeuzjad-a3mzeuzjad.gz

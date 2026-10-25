@@ -20,4 +20,5 @@ public class Produto
     public string? ImagemUrl { get; set; }
 
     public int IdCategoria { get; set; }
+    
 }

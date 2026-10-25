@@ -1,25 +1,46 @@
 :root {
+
     --cor-letra: #f8f9fa;
-    --cor-fundo: rgba(253, 6, 179, 0.39);
-    --cor-htmlFundo: rgba(0, 0, 0, 0.575);
+    --cor-fundo: rgba(247, 144, 201, 0.699);
     --cor-letraCard:black;
     --cor--card:rgba(253, 253, 253, 0.808);
-}
+    --cor--hover:rgba(226, 94, 209, 0.76);
+    
+
+  }
 html {
   font-size: 14px;
-  background-color:var(--cor-htmlFundo);
   position: relative;
   min-height: 100%;
+  
 }
+
+html,
+body {
+    min-height: 100vh;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    background-color:var(--cor-fundo);
+}
+main{
+  flex: 1;
+}
+
+
+footer {
+    color: var(--cor-letra);
+    background-color: rgba(0, 0, 0, 0.705);
+  }
+
 
 @media (min-width: 768px) {
   html {
     font-size: 20px;
   }
-}
-body {
-  margin-bottom: 60px;
-  background-color:var(--cor-fundo);
 }
 .imagem-produto 
 {
@@ -35,28 +56,65 @@ h1
   color: var(--cor-letra);
 }
 .navbar {
-    background-color: #d63384;
+    background-color:var(--cor--card);
 }
 
 .navbar-brand {
-    color:var(--cor-letra);
-}
+    color:var(--cor-letraCard);
+}/*Cor da esquerda do topo*/
 
 .nav-link {
-    color:var(--cor-letra);
-}
+    color:var(--cor-letraCard);
+}/*Cor da direito do topo*/
+
 .card-body /*Cor das letras dentro do card*/
 {
   color:var(--cor-letraCard);
   background-color:var(--cor--card);
   border: none;
   border-radius: 20px;
+  padding: 10px;
 }
 .card
 {
   background-color:transparent;
   border: none ;
+  transition: 0.3s;
+}
+.card
+{
+  transform: translateY(-3px);
 }
 .nav-link{
   margin: 40px;
+}
+.nav-link:hover{
+  color: var(--cor--hover);
+}
+.btn{
+  color: var(--cor-letraCard);
+  background-color: var(--cor-fundo);
+}
+.btn:hover{
+  background-color: var(--cor--hover);
+}
+.nomeProduto{
+  text-align: center;
+}
+.preco {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--cor-letraCard);
+    text-align: center;
+}
+.logo-navbar {
+    height: 80px;
+    width: auto;
+}
+.btn-danger{
+  border: none;
+}
+.btn-danger:hover{
+  background-color: red;
+  border: none;
 }

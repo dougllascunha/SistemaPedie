@@ -1,0 +1,82 @@
+
+@model List<pimFinal.Models.ItemCarrinho>
+
+@{
+    ViewData["Title"] = "Carrinho";
+}
+
+<h1> Carrinho</h1>
+
+@if (!Model.Any())
+{
+    <p>Seu carrinho está vazio.</p>
+}
+else
+{
+    decimal total = 0;
+    
+     foreach(var item in Model)
+    {
+        var subtotal = item.Produto.Preco * item.Quantidade;
+
+        total += subtotal;
+
+        <div class="card mb-3">
+            <div class="card-body">
+
+                <h4>@item.Produto.Nome</h4>
+                
+
+                <div class="d-flex align-items-center gap-2">
+
+                    <a asp-controller="Carrinho"
+                    asp-action="Diminuir"
+                    asp-route-id="@item.Produto!.IdProduto"
+                    class="btn btn-sm">
+                        -
+                    </a>
+
+                    <span>@item.Quantidade</span>
+
+                    <a asp-controller="Carrinho"
+                    asp-action="Aumentar"
+                    asp-route-id="@item.Produto!.IdProduto"
+                    class="btn btn-sm">
+                        +
+                    </a>
+                    <a asp-controller="Carrinho"
+                    asp-action="Remover"
+                    asp-route-id="@item.Produto!.IdProduto"
+                    class="btn btn-danger">
+                        Remover
+                    </a>
+
+                    
+
+                </div>
+
+                <p>
+                    Preço Unitário:
+                    R$ @item.Produto.Preco.ToString("N2")
+                </p>
+
+                <p>
+                    Subtotal:
+                    R$ @subtotal.ToString("N2")
+                </p>
+
+            </div>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-body">
+
+            <h3>
+                Total da Compra:
+                R$ @total.ToString("N2")
+            </h3>
+
+        </div>
+    </div>
+}
