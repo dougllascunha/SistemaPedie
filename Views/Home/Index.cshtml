@@ -1,4 +1,4 @@
-﻿@model IEnumerable<pimFinal.Models.Produto>//aqui fala que recebe dados do models produto 
+@model IEnumerable<pimFinal.Models.Produto>
 @{
     ViewData["Title"] = "Pediê";
 }
@@ -8,51 +8,85 @@
     <p id="subtitulo">Doces feitos com carinho.</p>
 </div>
 
+<!-- SESSÃO DE FILTROS E BUSCA -->
+<div class="row mb-5">
+    <div class="col-md-8 mx-auto text-center">
+             
+        <form asp-controller="Home" asp-action="Index" method="get" class="d-flex mb-4 shadow-sm">
+            <input type="text" name="busca" class="form-control form-control-lg me-2" 
+                   placeholder="Buscar por nome do doce..." value="@ViewBag.BuscaAtual" />
+            
+            
+            @if (ViewBag.CategoriaAtual != null)
+            {
+                <input type="hidden" name="idCategoria" value="@ViewBag.CategoriaAtual" />
+            }
+            
+            <button type="submit" class="btn btn-primary btn-lg px-4">Buscar</button>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg ms-2">Limpar</a>
+        </form>
+
+        
+        <div class="d-flex flex-wrap gap-2 justify-content-center">
+                       
+            <a asp-controller="Home" asp-action="Index" 
+               class="btn @(ViewBag.CategoriaAtual == null ? "btn-primary" : "btn-outline-primary")">
+                Todos
+            </a>
+            
+            <!-- Botões gerados dinamicamente com as categorias do banco -->
+            @if (ViewBag.Categorias != null)
+            {
+                foreach (var cat in (IEnumerable<pimFinal.Models.Categoria>)ViewBag.Categorias)
+                {
+                    <a asp-controller="Home" asp-action="Index" asp-route-idCategoria="@cat.IdCategoria" 
+                       class="btn @(ViewBag.CategoriaAtual == cat.IdCategoria ? "btn-primary" : "btn-outline-primary")">
+                        @cat.Nome
+                    </a>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+<!-- SESSÃO DE PRODUTOS -->
 <div class="row">
-
-    @foreach (var produto in Model)
+    @if (!Model.Any())
     {
-        <div class="col-6 col-md-4 mb-4">
-            <div class="card h-100">
-                <div class="card-body">
+        <div class="col-12 text-center my-5">
+            <h4 class="text-muted">Nenhum produto encontrado.</h4>
+        </div>
+    }
+    else
+    {
+        @foreach (var produto in Model)
+        {
+            <div class="col-6 col-md-4 mb-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body d-flex flex-column">
 
-                    <h5 class="card-title">
-                        <p class="nomeProduto">@produto.Nome</p>
-                    </h5>
-                    <div class="text-center">
-
-                        <img 
-                        src="@produto.ImagemUrl"
-                        alt="@produto.Nome"
-                        class="imagem-produto">
-                    </div>
-
-
-                    
-
-                    <p class="preco">
+                        <h5 class="card-title text-center mb-3">
+                            <span class="nomeProduto fw-bold">@produto.Nome</span>
+                        </h5>
                         
-                        R$ @produto.Preco
-                    </p>
+                        <div class="text-center mb-3 flex-grow-1">
+                            <img src="@produto.ImagemUrl" alt="@produto.Nome" class="imagem-produto img-fluid rounded">
+                        </div>
 
-                    <form asp-controller="Carrinho"
-                        asp-action="Adicionar"
-                        method="post">
-
-                        <input type="hidden"
-                            name="id"
-                            value="@produto.IdProduto" />
-
-                            <button type="submit"
-                                    class="btn w-100">
+                        <p class="preco text-center fs-5 text-success fw-bold">
+                            R$ @produto.Preco
+                        </p>
+                        
+                        <form asp-controller="Carrinho" asp-action="Adicionar" method="post" class="mt-auto">
+                            <input type="hidden" name="id" value="@produto.IdProduto" />
+                            <button type="submit" class="btn btn-primary w-100">
                                 Adicionar ao Carrinho
                             </button>
+                        </form>
 
-                    </form>
-
-                    
+                    </div>
                 </div>
             </div>
-        </div>
-
+        }
     }
+</div>
