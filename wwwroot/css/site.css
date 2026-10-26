@@ -30,7 +30,6 @@ main{
   flex: 1;
 }
 
-
 footer {
     color: var(--cor-letra);
     background-color: rgba(0, 0, 0, 0.705);
@@ -44,8 +43,9 @@ footer {
 }
 .imagem-produto 
 {
-    height: 250px;
-    object-fit: contain;
+    width: 280px;
+    height: 280px;
+    object-fit: cover;
 }
 h1
 {
@@ -58,10 +58,6 @@ h1
 .navbar {
     background-color:var(--cor--card);
 }
-
-.navbar-brand {
-    color:var(--cor-letraCard);
-}/*Cor da esquerda do topo*/
 
 .nav-link {
     color:var(--cor-letraCard);
@@ -81,7 +77,7 @@ h1
   border: none ;
   transition: 0.3s;
 }
-.card
+.card:hover
 {
   transform: translateY(-3px);
 }
@@ -100,7 +96,11 @@ h1
   background-color: var(--cor--hover);
 }
 .nomeProduto{
-  text-align: center;
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
 .preco {
     font-size: 1.5rem;
@@ -120,7 +120,7 @@ h1
   border: none;
 }
 /*
-Carrinho de compras
+=====Carrinho de compras=======
 */
 p.letrasCarrinho{
   font-size:30px ;
@@ -144,3 +144,84 @@ h4.letrasCarrinho{
     font-size: 1.5rem;
     padding: 15px 50px;
 }
+.btn-remover{
+    border: none;
+    width: 120px;
+    margin-top: 20px;
+    font-size: 24px;
+    padding: 10px 10px;
+  }
+  .acoesCarrinho{
+    width: 140px;
+    margin-right: 15px;
+}
+
+@media (max-width: 768px) {
+    .navbar .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    .imagem-produto 
+  {
+      width: 110px;
+      height: 110px;
+      object-fit: cover;
+  }
+
+    .navbar-brand {
+        position: static;
+        transform: none;
+        margin: 0;
+    }
+
+    .logo-navbar {
+        height: 60px;
+        max-width: 100%;
+        object-fit: contain;
+    }
+
+    .nav-link {
+        display: inline-block;
+        margin: 5px;
+        white-space: nowrap;
+    }
+    .tituloCarrinho {
+        font-size: 36px;
+    }
+
+    p.letrasCarrinho {
+        font-size: 12px;
+        margin-left: 10px;
+    }
+
+    h4.letrasCarrinho {
+        font-size: 20px;
+        margin-left: 10px;
+    }
+
+    .qtdItens {
+        font-size: 18px;
+    }
+
+    .btn-sm {
+        font-size: 14px;
+        padding: 5px 10px;
+        
+    }
+
+    .btn-finalizar {
+        font-size: 18px;
+        padding: 12px 20px;
+        max-width: 100%;
+        
+    }
+    .btn-remover{
+        margin-top: 25px;
+        font-size: 15px;
+        padding: 4px;
+    }
+}
+
+
