@@ -1,0 +1,53 @@
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm">
+                <div class="card-body p-5">
+                    <h2 class="text-center mb-4">Entrar</h2>
+
+                    <!-- Exibe o erro caso o e-mail ou senha estejam errados -->
+                    @if (ViewBag.Erro != null)
+                    {
+                        <div class="alert alert-danger text-center">
+                            @ViewBag.Erro
+                        </div>
+                    }
+
+                    <!-- Exibe mensagem de sucesso caso venha da tela de cadastro -->
+                    @if (TempData["Mensagem"] != null)
+                    {
+                        <div class="alert alert-success text-center">
+                            @TempData["Mensagem"]
+                        </div>
+                    }
+
+                    <form asp-controller="Cliente" asp-action="Login" method="post">
+                        
+                        <div class="mb-3">
+                            <label for="email" class="form-label">E-mail</label>
+                            <input type="email" name="email" class="form-control" id="email" required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="senhaAcesso" class="form-label">Senha</label>
+                            <input type="password" name="senhaAcesso" class="form-control" id="senhaAcesso" required />
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
+                        </div>
+                        
+                        <div class="text-center mt-3">
+                            <p>Não tem uma conta? <a asp-controller="Cliente" asp-action="Cadastrar">Cadastre-se</a></p>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
