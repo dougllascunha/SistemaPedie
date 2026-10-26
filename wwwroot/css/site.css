@@ -5,6 +5,7 @@
     --cor-letraCard:black;
     --cor--card:rgba(253, 253, 253, 0.808);
     --cor--hover:rgba(226, 94, 209, 0.76);
+    --cor--selecionar:rgb(255, 0, 234);
     
 
   }
@@ -155,6 +156,13 @@ h4.letrasCarrinho{
     width: 140px;
     margin-right: 15px;
 }
+.form-check-input{
+  border-color: var(--cor--hover);
+}
+.form-check-input:checked {
+    border-color:var(--cor--selecionar);
+    background-color: var(--cor--selecionar);
+}
 
 @media (max-width: 768px) {
     .navbar .container {
@@ -222,6 +230,7 @@ h4.letrasCarrinho{
         font-size: 15px;
         padding: 4px;
     }
+    
 }
 
 

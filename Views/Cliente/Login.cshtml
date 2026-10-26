@@ -26,6 +26,7 @@
                     }
 
                     <form asp-controller="Cliente" asp-action="Login" method="post">
+                        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
                         
                         <div class="mb-3">
                             <label for="email" class="form-label">E-mail</label>

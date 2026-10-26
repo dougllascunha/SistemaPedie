@@ -41,13 +41,14 @@ namespace pimFinal.Controllers
 
         // --- MÉTODOS DE LOGIN ---
         [HttpGet]
-        public IActionResult Login()
+        public IActionResult Login(string? returnUrl)
         {
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
         [HttpPost]
-        public IActionResult Login(string email, string senhaAcesso)
+        public IActionResult Login(string email, string senhaAcesso, string? returnUrl)
         {
             
             var cliente = _context.Clientes
@@ -56,7 +57,7 @@ namespace pimFinal.Controllers
             if (cliente != null)
             {
                 HttpContext.Session.SetInt32(
-                "Id Cliente",
+                "IdCliente",
                 cliente.IdCliente);
 
                 HttpContext.Session.SetString(
@@ -64,11 +65,18 @@ namespace pimFinal.Controllers
                 cliente.Nome);
                
                 TempData["Mensagem"] = $"Bem-vindo de volta, {cliente.Nome}!";
+
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return LocalRedirect(returnUrl);
+                }
+
                 return RedirectToAction("Index", "Home");
             }
 
             
             ViewBag.Erro = "E-mail ou senha incorretos.";
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
     }

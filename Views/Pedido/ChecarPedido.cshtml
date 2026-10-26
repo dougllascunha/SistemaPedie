@@ -1,0 +1,169 @@
+@model pimFinal.Models.Cliente
+
+@{
+    ViewData["Title"] = "Checar Pedido";
+}
+<h1 class="tituloCarrinho">Checar Pedido</h1>
+<form asp-action="FinalizarCompra" method="post">
+                    <div class="card mt-3">
+                        <div class="card-body">
+
+                            <h3>Dados do Cliente</h3>
+
+                            <p>
+                                <strong>Nome:</strong>
+                                    @Model.Nome
+                            </p>
+
+                            <p>
+                                <strong>Email:</strong>
+                                    @Model.Email
+                            </p>
+                            <p>
+                                <strong>Telefone:</strong>     
+                                    @Model.Telefone
+                            </p>
+                        </div>
+                    </div>
+
+                <div class="card mt-3">
+                    <div class="card-body">
+
+                        <h3>Forma de Entrega</h3>
+
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                type="radio"
+                                name="entrega"
+                                id="opcaoEntrega"
+                                value="Entrega"
+                                checked>
+
+                            <label class="form-check-label" for="opcaoEntrega">
+                                Entrega
+                            </label>
+                        </div>
+                        <div id="dadosEndereco">
+                            <h3 class="mt-4">Endereço de Entrega</h3>
+
+                                <div class="mb-3">
+                                    <label>CEP</label>
+                                    <input id="cep"           name="cep" class="form-control" />
+                                </div>
+
+                                <div  class="mb-3">
+                                    <label>Rua</label>
+                                    <input id="rua"           name="rua"class="form-control" /> 
+                                </div>
+                                <div  class="mb-3">
+                                    <label>Bairro</label>
+                                    <input id="bairro"        name="bairro"class="form-control" />
+                                </div>
+
+                                <div  class="mb-3">
+                                    <label>Cidade</label>
+                                    <input id="cidade"       name="cidade"class="form-control" />
+                                </div>
+
+                                <div  class="mb-3">
+                                    <label>Estado</label>
+                                    <input id="estado"       name="estado" class="form-control" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label>Número</label>
+                                    <input id="numero"      name="numero" class="form-control" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label>Complemento</label>
+                                    <input id="complemento" name="complemento" class="form-control" />
+                                </div>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                type="radio"
+                                name="entrega"
+                                id="opcaoRetirada"
+                                value="Retirada">
+
+                            <label class="form-check-label" for="opcaoRetirada">
+                                Retirar na Loja
+                            </label>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="card mt-3">
+                    <div class="card-body">
+
+                        <h3>Forma de Pagamento</h3>
+
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                type="radio"
+                                name="pagamento"
+                                checked>
+
+                            PIX
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                type="radio"
+                                name="pagamento">
+
+                            Cartão de Crédito
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                type="radio"
+                                name="pagamento">
+
+                            Cartão de Débito
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input"
+                                type="radio"
+                                name="pagamento">
+
+                            Dinheiro
+                        </div>
+
+                    </div>
+                </div>
+                <div class="card mt-3">
+                    <div class="card-body">
+
+                        <h3>Resumo da Compra</h3>
+
+                        <p>
+                            Subtotal:
+                            R$ @ViewBag.Subtotal.ToString("N2")
+                        </p>
+
+                        <p>
+                            Frete:
+                            R$ @ViewBag.Frete.ToString("N2")
+                        </p>
+
+                        <hr />
+
+                        <h4>
+                            Total Final:
+                            R$ @ViewBag.TotalFinal.ToString("N2")
+                        </h4>
+
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        Finalizar Compra
+                    </button>
+                </div>
+
+</form>
