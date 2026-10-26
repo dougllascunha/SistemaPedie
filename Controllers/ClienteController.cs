@@ -55,6 +55,13 @@ namespace pimFinal.Controllers
 
             if (cliente != null)
             {
+                HttpContext.Session.SetInt32(
+                "Id Cliente",
+                cliente.IdCliente);
+
+                HttpContext.Session.SetString(
+                "NomeCliente",
+                cliente.Nome);
                
                 TempData["Mensagem"] = $"Bem-vindo de volta, {cliente.Nome}!";
                 return RedirectToAction("Index", "Home");

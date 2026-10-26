@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("pimFinal")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+804be04f939018160fc1c4049290ec14137c966f")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+33a15d97e38f5183bbb748300bf54da282a2525b")]
 [assembly: System.Reflection.AssemblyProductAttribute("pimFinal")]
 [assembly: System.Reflection.AssemblyTitleAttribute("pimFinal")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
