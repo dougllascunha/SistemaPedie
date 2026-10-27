@@ -158,27 +158,55 @@ public class PedidoController : Controller
             HttpContext.Session.Remove("Carrinho");
             return RedirectToAction("Sucesso");
         }
+        
         public IActionResult Sucesso()
-        public IActionResult MeusPedidos()
-        {
-            var idCliente = HttpContext.Session.GetInt32("IdCliente");
-
-            if (idCliente == null)
-            {
-                return RedirectToAction("Login", "Cliente");
-            }
-
-            // Busca os pedidos do cliente, incluindo a descrição da Situação
-            var meusPedidos = _context.Pedidos
-                .Include(p => p.Situacao)
-                .Where(p => p.IdCliente == idCliente.Value)
-                .OrderByDescending(p => p.DataPedido) 
-                .ToList();
-
-            return View(meusPedidos);
-        }
         {
             return View();
         }
 
+        public IActionResult MeusPedidos()
+        {
+            var idCliente = HttpContext.Session.GetInt32("IdCliente");
+            if (idCliente == null) return RedirectToAction("Login", "Cliente");
+
+            var meusPedidos = _context.Pedidos
+                .Include(p => p.Situacao)
+                .Where(p => p.IdCliente == idCliente.Value)
+                .OrderByDescending(p => p.DataPedido)
+                .ToList();
+            return View(meusPedidos);
+        }
+
+        
+        public IActionResult GerenciarPedidos()
+        {
+            
+            if (HttpContext.Session.GetString("Perfil") != "Admin") 
+                return RedirectToAction("Index", "Home");
+
+            
+            var todosPedidos = _context.Pedidos
+                .Include(p => p.Situacao)
+                .Include(p => p.Cliente) 
+                .OrderByDescending(p => p.DataPedido)
+                .ToList();
+            
+            ViewBag.Situacoes = _context.Situacoes.ToList();
+            return View(todosPedidos);
+        }
+
+        [HttpPost]
+        public IActionResult AtualizarStatus(int idPedido, int idSituacao)
+        {
+            if (HttpContext.Session.GetString("Perfil") != "Admin") 
+                return RedirectToAction("Index", "Home");
+
+            var pedido = _context.Pedidos.FirstOrDefault(p => p.IdPedido == idPedido);
+            if (pedido != null)
+            {
+                pedido.IdSituacao = idSituacao;
+                _context.SaveChanges();
+            }
+            return RedirectToAction("GerenciarPedidos");
+        }
 }
