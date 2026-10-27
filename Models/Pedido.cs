@@ -16,7 +16,9 @@ public class Pedido
     [Column("valorTotal")]
     public decimal valorTotal { get; set; }
 
-
     [ForeignKey("IdCliente")]
     public Cliente Cliente { get; set; } = null!;
+
+    [ForeignKey("IdSituacao")]
+    public Situacao Situacao { get; set; } = null!;
 }
