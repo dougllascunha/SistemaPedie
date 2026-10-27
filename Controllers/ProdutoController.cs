@@ -43,7 +43,29 @@ public class ProdutoController : Controller
         _context.SaveChanges();
         return RedirectToAction("Index");
     }
+    [HttpGet]
+    public IActionResult Editar(int id)
+    {
+        if (!IsAdmin()) return RedirectToAction("Index", "Home");
+        
+        var produto = _context.Produtos.FirstOrDefault(p => p.IdProduto == id);
+        if (produto == null) return RedirectToAction("Index");
 
+        ViewBag.Categorias = _context.Categorias.ToList();
+        return View(produto);
+    }
+
+    // EDITAR (Salva as alterações no banco)
+    [HttpPost]
+    public IActionResult Editar(Produto produto)
+    {
+        if (!IsAdmin()) return RedirectToAction("Index", "Home");
+        
+        _context.Produtos.Update(produto);
+        _context.SaveChanges();
+        
+        return RedirectToAction("Index");
+    }
     
     [HttpPost]
     public IActionResult Deletar(int idProduto)
