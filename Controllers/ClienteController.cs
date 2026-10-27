@@ -63,6 +63,9 @@ namespace pimFinal.Controllers
                 HttpContext.Session.SetString(
                 "NomeCliente",
                 cliente.Nome);
+
+                HttpContext.Session.SetInt32("IdCliente", cliente.IdCliente);
+                HttpContext.Session.SetString("Perfil", cliente.Perfil);
                
                 TempData["Mensagem"] = $"Bem-vindo de volta, {cliente.Nome}!";
 
