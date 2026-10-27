@@ -1,0 +1,54 @@
+@model IEnumerable<pimFinal.Models.Produto>
+@{
+    ViewData["Title"] = "Gestão de Produtos";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger">⚙️ Gestão de Produtos</h2>
+        <a asp-action="Criar" class="btn btn-success fw-bold">+ Novo Produto</a>
+    </div>
+
+    <div class="table-responsive shadow-sm">
+        <table class="table table-hover align-middle bg-white border">
+            <thead class="table-dark">
+                <tr>
+                    <th>Imagem</th>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                    <th>Status</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="@item.ImagemUrl" alt="@item.Nome" style="width: 50px; height: 50px; object-fit: cover;" class="rounded">
+                        </td>
+                        <td class="fw-bold">@item.Nome</td>
+                        <td class="text-success fw-bold">R$ @item.Preco.ToString("F2")</td>
+                        <td>
+                            @if(item.Disponivel)
+                            {
+                                <span class="badge bg-success">Disponível</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Esgotado</span>
+                            }
+                        </td>
+                        <td class="text-end">
+                            <form asp-action="Deletar" method="post" class="d-inline" onsubmit="return confirm('Tem certeza que deseja apagar este doce?');">
+                                <a asp-action="Editar" asp-route-id="@item.IdProduto" class="btn btn-sm btn-primary">Editar</a>
+                                <input type="hidden" name="idProduto" value="@item.IdProduto" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Apagar</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
