@@ -38,12 +38,13 @@
                             <input type="password" name="senhaAcesso" class="form-control" id="senhaAcesso" required />
                         </div>
 
-                        <div class="d-grid gap-2">
+                        <div class="d-grid gap-2 mb-3">
                             <button type="submit" class="btn btn-primary btn-lg">Entrar</button>
                         </div>
                         
-                        <div class="text-center mt-3">
-                            <p>Não tem uma conta? <a asp-controller="Cliente" asp-action="Cadastrar">Cadastre-se</a></p>
+                        <div class="text-center">
+                            <p class="mb-1"><a asp-controller="Cliente" asp-action="RecuperarSenha" class="text-decoration-none">Esqueci minha senha</a></p>
+                            <p>Não tem uma conta? <a asp-controller="Cliente" asp-action="Cadastrar" class="text-decoration-none fw-bold">Cadastre-se</a></p>
                         </div>
 
                     </form>
