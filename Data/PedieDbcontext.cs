@@ -18,4 +18,5 @@ public class PedieDbContext : DbContext
     public DbSet<Pedido> Pedidos { get; set; }
     public DbSet<ItemPedido> ItensPedido { get; set; }
     public DbSet<Endereco> Enderecos { get; set; }
+    public DbSet<Situacao> Situacoes { get; set; }
 }
