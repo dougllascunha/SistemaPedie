@@ -50,6 +50,16 @@
                         Meus Pedidos
                     </a>
 
+                    @if (Context.Session.GetString("Perfil") == "Admin")
+                    {
+                        <a class="nav-link d-inline fw-bold text-danger ms-3" asp-controller="Pedido" asp-action="GerenciarPedidos">
+                            ⚙️ Gestão de Pedidos
+                        </a>
+                        <a class="nav-link d-inline fw-bold text-danger ms-2" asp-controller="Produto" asp-action="Index">
+                            ⚙️ Gestão de Produtos
+                        </a>
+                    }
+
                     <a class="nav-link d-inline fw-bold ms-3"
                        asp-controller="Cliente"
                        asp-action="Login">
