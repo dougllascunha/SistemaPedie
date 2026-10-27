@@ -159,6 +159,24 @@ public class PedidoController : Controller
             return RedirectToAction("Sucesso");
         }
         public IActionResult Sucesso()
+        public IActionResult MeusPedidos()
+        {
+            var idCliente = HttpContext.Session.GetInt32("IdCliente");
+
+            if (idCliente == null)
+            {
+                return RedirectToAction("Login", "Cliente");
+            }
+
+            // Busca os pedidos do cliente, incluindo a descrição da Situação
+            var meusPedidos = _context.Pedidos
+                .Include(p => p.Situacao)
+                .Where(p => p.IdCliente == idCliente.Value)
+                .OrderByDescending(p => p.DataPedido) 
+                .ToList();
+
+            return View(meusPedidos);
+        }
         {
             return View();
         }
