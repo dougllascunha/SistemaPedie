@@ -1,0 +1,70 @@
+@model IEnumerable<pimFinal.Models.Pedido>
+
+@{
+    ViewData["Title"] = "Gestão de Pedidos (Admin)";
+}
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger">⚙️ Painel de Controle de Pedidos</h2>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info text-center">Nenhum pedido foi realizado no site ainda.</div>
+    }
+    else
+    {
+        <div class="table-responsive shadow-sm">
+            <table class="table table-hover align-middle bg-white border">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Nº Pedido</th>
+                        <th>Cliente</th>
+                        <th>Data</th>
+                        <th>Total</th>
+                        <th>Status e Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var pedido in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold">#@pedido.IdPedido</td>
+                            
+                            <!-- Exibe o nome do cliente que comprou -->
+                            <td>@pedido.Cliente.Nome</td> 
+                            
+                            <td>@pedido.DataPedido.ToString("dd/MM/yyyy HH:mm")</td>
+                            
+                            <td class="text-success fw-bold">R$ @pedido.valorTotal.ToString("F2")</td>
+                            
+                            <td>
+                                <!-- Formulário rápido para o Admin mudar o status do pedido na própria tabela -->
+                                <form asp-controller="Pedido" asp-action="AtualizarStatus" method="post" class="d-flex align-items-center">
+                                    <input type="hidden" name="idPedido" value="@pedido.IdPedido" />
+                                    
+                                    <select name="idSituacao" class="form-select form-select-sm me-2" style="max-width: 180px;">
+                                        @foreach (var sit in ViewBag.Situacoes)
+                                        {
+                                            if (sit.IdSituacao == pedido.IdSituacao)
+                                            {
+                                                <option value="@sit.IdSituacao" selected>@sit.Descricao</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@sit.IdSituacao">@sit.Descricao</option>
+                                            }
+                                        }
+                                    </select>
+                                    
+                                    <button type="submit" class="btn btn-sm btn-primary">Salvar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
