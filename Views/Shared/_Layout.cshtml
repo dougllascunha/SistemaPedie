@@ -31,7 +31,7 @@
 
                 <div class="d-none d-lg-flex align-items-center">
                     <a class="nav-link mx-2" asp-controller="Home" asp-action="Index">Início</a>
-                    <a class="nav-link mx-2" href="#">Promoções</a>
+                    <a class="nav-link mx-2" asp-controller="Home" asp-action="Promocoes">Promoções</a>
                     <a class="nav-link mx-2 bi bi-cart3" asp-controller="Carrinho" asp-action="Index">Carrinho</a>
                     
                     @if (Context.Session.GetInt32("IdCliente") != null)
@@ -42,6 +42,8 @@
                         {
                             <a class="nav-link fw-bold text-danger mx-2 bi bi-gear" asp-controller="Pedido" asp-action="GerenciarPedidos"> Gestão de Pedidos</a>
                             <a class="nav-link fw-bold text-danger mx-2 bi bi-gear" asp-controller="Produto" asp-action="Index"> Gestão de Produtos</a>
+                            <a class="nav-link fw-bold text-danger mx-2 bi bi-tags" asp-controller="Promocao" asp-action="Index"> Promoções</a>
+                            <li><a class="dropdown-item fw-bold text-danger bi bi-tags" asp-controller="Promocao" asp-action="Index"> Gestão de Promoções</a></li>
                         }
 
                         <div class="ms-4 border-start ps-4">
@@ -111,7 +113,12 @@
     </main>
 
     <footer class="text-center mt-5 mb-4 d-none d-lg-block">
-        <p class="corfooter"><small>© 2026 - Douglas Heinrick de Souza Cunha - Thiago Elson Alves Matos</small></p>
+        <div class="container">
+            <p class="text-muted mb-2" style="font-size: 0.85rem;">
+                A Pediê valoriza a diversidade e não tolera qualquer forma de discriminação por raça, etnia, religião, gênero, orientação sexual ou condição social.
+            </p>
+            <p class="corfooter fw-bold"><small>© 2026 - Douglas Heinrick de Souza Cunha - Thiago Elson Alves Matos</small></p>
+        </div>
     </footer>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
