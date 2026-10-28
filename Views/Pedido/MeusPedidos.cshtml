@@ -17,7 +17,7 @@
     else
     {
         <div class="table-responsive shadow-sm">
-            <table class="table table-hover table-bordered align-middle bg-white">
+            <table class="table table-hover table-bordered align-middle bg-white text-nowrap">
                 <thead class="table-light">
                     <tr>
                         <th>Nº do Pedido</th>
@@ -33,12 +33,19 @@
                             <td class="fw-bold">#@pedido.IdPedido</td>
                             <td>@pedido.DataPedido.ToString("dd/MM/yyyy HH:mm")</td>
                             
-                            <!-- Colocamos um badge colorido dependendo do status usando Bootstrap -->
                             <td>
                                 <span class="badge @(pedido.IdSituacao == 1 ? "bg-warning text-dark" : 
                                                     pedido.IdSituacao == 4 ? "bg-success" : "bg-primary")">
                                     @pedido.Situacao.Descricao
                                 </span>
+                                
+                                <!-- Tempo estimado inserido aqui -->
+                                @if (pedido.IdSituacao == 1 || pedido.IdSituacao == 2 || pedido.IdSituacao == 3)
+                                {
+                                    <div class="text-muted mt-1 fw-bold" style="font-size: 0.85rem;">
+                                        ⏳ Previsão: 1h a 3h30 min
+                                    </div>
+                                }
                             </td>
                             
                             <td class="text-success fw-bold">R$ @pedido.valorTotal.ToString("F2")</td>
