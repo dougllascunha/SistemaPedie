@@ -1,0 +1,94 @@
+@{
+    ViewData["Title"] = "Pagamento";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-white text-center border-bottom-0 pt-4">
+                    <h3 class="fw-bold text-success">Finalizar Pagamento</h3>
+                    <p class="text-muted">Total a pagar: <strong class="fs-4 text-dark">R$ @ViewBag.TotalFinal.ToString("F2")</strong></p>
+                </div>
+                <div class="card-body p-4">
+                    
+                    <!-- Abas de Pagamento -->
+                    <ul class="nav nav-pills nav-justified mb-4" id="pagamentoTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active fw-bold" id="pix-tab" data-bs-toggle="pill" data-bs-target="#pix" type="button" role="tab">PIX</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link fw-bold" id="cartao-tab" data-bs-toggle="pill" data-bs-target="#cartao" type="button" role="tab">Cartão de Crédito</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="pagamentoTabsContent">
+                        
+                        <!-- ABA DO PIX (A que realmente funciona) -->
+                        <div class="tab-pane fade show active text-center" id="pix" role="tabpanel">
+                            <h5 class="mb-3">Escaneie o QR Code abaixo</h5>
+                            
+                            <!-- Substitua a imagem abaixo pelo seu QR Code real -->
+                            <img src="~/imagens/qrcode-pix.png" alt="QR Code PIX" class="img-fluid border rounded p-2 mb-3" style="max-width: 250px;">
+                            
+                            <div class="alert alert-warning">
+                                <div class="spinner-border spinner-border-sm text-warning me-2" role="status"></div>
+                                Aguardando confirmação do banco...
+                                <br/>
+                                <small class="fw-bold">Redirecionando em <span id="contador">60</span> segundos</small>
+                            </div>
+
+                            <!-- Formulário invisível que o JavaScript vai disparar -->
+                            <form asp-action="ConfirmarPagamento" method="post" id="formPix">
+                            </form>
+
+                            <!-- Dica de Apresentação: Um botão escondido caso o professor não queira esperar os 60 segundos inteiros -->
+                            <button type="button" onclick="document.getElementById('formPix').submit();" class="btn btn-sm btn-outline-success mt-2">
+                                Forçar Validação (Para Apresentação)
+                            </button>
+                        </div>
+
+                        <!-- ABA DO CARTÃO (Enfeite) -->
+                        <div class="tab-pane fade" id="cartao" role="tabpanel">
+                            <div class="mb-3">
+                                <label class="form-label">Número do Cartão</label>
+                                <input type="text" class="form-control" placeholder="0000 0000 0000 0000" disabled>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">Validade</label>
+                                    <input type="text" class="form-control" placeholder="MM/AA" disabled>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label">CVV</label>
+                                    <input type="text" class="form-control" placeholder="123" disabled>
+                                </div>
+                            </div>
+                            <button type="button" class="btn btn-secondary w-100" disabled>Função Indisponível no Momento</button>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let tempoRestante = 60;
+        const contadorElemento = document.getElementById('contador');
+        const formPix = document.getElementById('formPix');
+
+        const timer = setInterval(() => {
+            tempoRestante--;
+            contadorElemento.innerText = tempoRestante;
+
+            if (tempoRestante <= 0) {
+                clearInterval(timer);
+                formPix.submit(); // Envia para a tela de Sucesso e salva o pedido
+            }
+        }, 1000);
+    </script>
+}
