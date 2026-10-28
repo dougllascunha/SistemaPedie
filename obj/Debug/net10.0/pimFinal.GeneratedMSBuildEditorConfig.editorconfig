@@ -43,6 +43,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50ZVxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/PROGRAMAS/pimFinal/Views/Cliente/RecuperarSenha.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50ZVxSZWN1cGVyYXJTZW5oYS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/PROGRAMAS/pimFinal/Views/Cliente/RedefinirSenha.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2xpZW50ZVxSZWRlZmluaXJTZW5oYS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/PROGRAMAS/pimFinal/Views/Home/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcSG9tZVxJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
@@ -55,8 +63,28 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVkaWRvXENoZWNhclBlZGlkby5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[D:/PROGRAMAS/pimFinal/Views/Pedido/GerenciarPedidos.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVkaWRvXEdlcmVuY2lhclBlZGlkb3MuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/PROGRAMAS/pimFinal/Views/Pedido/MeusPedidos.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVkaWRvXE1ldXNQZWRpZG9zLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
 [D:/PROGRAMAS/pimFinal/Views/Pedido/Sucesso.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUGVkaWRvXFN1Y2Vzc28uY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/PROGRAMAS/pimFinal/Views/Produto/Criar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHV0b1xDcmlhci5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/PROGRAMAS/pimFinal/Views/Produto/Editar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHV0b1xFZGl0YXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[D:/PROGRAMAS/pimFinal/Views/Produto/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcUHJvZHV0b1xJbmRleC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [D:/PROGRAMAS/pimFinal/Views/Shared/Error.cshtml]

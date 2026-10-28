@@ -8,3 +8,4 @@ select * from Produto;
 --insert into Produto(nome,descricao,preco,imagemUrl,idCategoria) values('Bolo de Cenoura','Bolo de Cenoura com cobertura de chocolate',20,'/imagens/BoloCenoura.jpg',3);
 --insert into Produto(nome,descricao,preco,imagemUrl,idCategoria) values('Bolo de Cenoura','Bolo de Cenoura com cobertura de chocolate',20,'/imagens/BoloCenoura.jpg',3);
 
+--insert into Situacao(descricao) values ('Aguardando retirada')

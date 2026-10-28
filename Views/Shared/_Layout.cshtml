@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
     <style>
         /* Evita que a barra inferior cubra o conteúdo da página no celular */
         @@media (max-width: 991px) {
@@ -17,7 +17,7 @@
     </style>
 </head>
 
-<body class="bg-light">
+<body>
 
     <!-- MENU TOPO (Apenas PC, no celular só fica a logo) -->
     <header>
@@ -33,7 +33,7 @@
                 <div class="d-none d-lg-flex align-items-center">
                     <a class="nav-link mx-2" asp-controller="Home" asp-action="Index">Início</a>
                     <a class="nav-link mx-2" href="#">Promoções</a>
-                    <a class="nav-link mx-2" asp-controller="Carrinho" asp-action="Index">Carrinho</a>
+                    <a class="nav-link mx-2 bi bi-cart3" asp-controller="Carrinho" asp-action="Index">Carrinho</a>
                     
                     <!-- LÓGICA DE USUÁRIO LOGADO -->
                     @if (Context.Session.GetInt32("IdCliente") != null)
@@ -43,13 +43,13 @@
                         <!-- Aparece só para o Admin -->
                         @if (Context.Session.GetString("Perfil") == "Admin")
                         {
-                            <a class="nav-link fw-bold text-danger mx-2" asp-controller="Pedido" asp-action="GerenciarPedidos">⚙️ Gestão de Pedidos</a>
-                            <a class="nav-link fw-bold text-danger mx-2" asp-controller="Produto" asp-action="Index">⚙️ Gestão de Produtos</a>
+                            <a class="nav-link fw-bold text-danger mx-2 bi bi-gear" asp-controller="Pedido" asp-action="GerenciarPedidos"> Gestão de Pedidos</a>
+                            <a class="nav-link fw-bold text-danger mx-2 bi bi-gear" asp-controller="Produto" asp-action="Index"> Gestão de Produtos</a>
                         }
 
                         <!-- Botão de Sair (Desktop) -->
                         <div class="ms-4 border-start ps-4">
-                            <a class="btn btn-outline-danger" asp-controller="Cliente" asp-action="Sair">Sair</a>
+                            <a class="btn btn-outline-danger bi bi-box-arrow-left" asp-controller="Cliente" asp-action="Sair"> Sair</a>
                         </div>
                     }
                     else
@@ -68,39 +68,39 @@
     <!-- MENU INFERIOR FIXO (Apenas Celular: d-flex d-lg-none) -->
     <nav class="navbar fixed-bottom bg-white border-top shadow-lg d-flex d-lg-none justify-content-around py-2" style="z-index: 1050;">
         <a asp-controller="Home" asp-action="Index" class="text-decoration-none text-dark text-center">
-            <div class="fs-4">🏠</div>
+            <div class="fs-4 bi bi-house-door"></div>
             <small>Início</small>
         </a>
         <a asp-controller="Carrinho" asp-action="Index" class="text-decoration-none text-dark text-center">
-            <div class="fs-4">🛒</div>
+            <div class="fs-4 bi bi-cart3"></div>
             <small>Carrinho</small>
         </a>
         
         @if (Context.Session.GetInt32("IdCliente") != null)
         {
             <a asp-controller="Pedido" asp-action="MeusPedidos" class="text-decoration-none text-dark text-center">
-                <div class="fs-4">📦</div>
+                <div class="fs-4 bi bi-bag"></div>
                 <small>Pedidos</small>
             </a>
             
             if (Context.Session.GetString("Perfil") == "Admin")
             {
-                <a asp-controller="Pedido" asp-action="GerenciarPedidos" class="text-decoration-none text-danger fw-bold text-center">
-                    <div class="fs-4">⚙️</div>
+                <a asp-controller="Pedido" asp-action="GerenciarPedidos" class="text-decoration-none text-danger text-center">
+                    <div class="fs-4 bi bi-gear"></div>
                     <small>Admin</small>
                 </a>
             }
 
             <!-- Botão de Sair (Mobile) -->
             <a asp-controller="Cliente" asp-action="Sair" class="text-decoration-none text-danger text-center">
-                <div class="fs-4">🚪</div>
+                <div class="fs-4 box-arrow-left bi bi-box-arrow-left"></div>
                 <small>Sair</small>
             </a>
         }
         else
         {
             <a asp-controller="Cliente" asp-action="Login" class="text-decoration-none text-dark text-center">
-                <div class="fs-4">👤</div>
+                <div class="fs-4 bi bi-person"></div>
                 <small>Entrar</small>
             </a>
         }
@@ -112,7 +112,7 @@
     </main>
 
     <footer class="text-center mt-5 mb-4 d-none d-lg-block">
-        <p class="text-muted"><small>© 2026 - Douglas Heinrick de Souza Cunha - Thiago Elson Alves Matos</small></p>
+        <p class="corfooter"><small>© 2026 - Douglas Heinrick de Souza Cunha - Thiago Elson Alves Matos</small></p>
     </footer>
 
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

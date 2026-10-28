@@ -1,7 +1,7 @@
 :root {
 
-    --cor-letra: #f8f9fa;
-    --cor-fundo: rgba(247, 144, 201, 0.699);
+    --cor-letra: #312930;
+    --cor-fundo: rgba(243, 200, 223, 0.699);
     --cor-letraCard:black;
     --cor--card:rgba(253, 253, 253, 0.808);
     --cor--hover:rgba(226, 94, 209, 0.76);
@@ -13,7 +13,6 @@ html {
   font-size: 14px;
   position: relative;
   min-height: 100%;
-  
 }
 
 html,
@@ -32,9 +31,12 @@ main{
 }
 
 footer {
-    color: var(--cor-letra);
     background-color: rgba(0, 0, 0, 0.705);
   }
+.corfooter{
+  color: white;
+  opacity: 0.75;
+}
 
 
 @media (min-width: 768px) {
@@ -55,6 +57,10 @@ h1
 #subtitulo
 {
   color: var(--cor-letra);
+  background-color: none;
+  border: none;
+  text-align: center;
+  
 }
 .navbar {
     background-color:var(--cor--card);
@@ -72,6 +78,7 @@ h1
   border-radius: 20px;
   padding: 10px;
 }
+
 .card
 {
   background-color:transparent;
@@ -88,9 +95,9 @@ h1
 .nav-link:hover{
   color: var(--cor--hover);
 }
-.btn{
+.btn{ /*cor dos botões do projeto*/
   color: var(--cor-letraCard);
-  background-color: var(--cor-fundo);
+  background-color: rgba(231, 190, 243, 0.74);
   border: none;
 }
 .btn:hover{
@@ -232,5 +239,3 @@ h4.letrasCarrinho{
     }
     
 }
-
-
