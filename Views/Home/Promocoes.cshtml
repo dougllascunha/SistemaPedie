@@ -1,0 +1,36 @@
+@model IEnumerable<pimFinal.Models.Promocao>
+@{
+    ViewData["Title"] = "Promoções";
+}
+
+<div class="text-center mb-5 mt-4">
+    <h1 class="display-4 text-danger fw-bold bi bi-tags-fill"> Promoções Ativas</h1>
+    <p class="text-muted fs-5">Aproveita os nossos descontos por tempo limitado!</p>
+</div>
+
+<div class="row justify-content-center">
+    @if (!Model.Any())
+    {
+        <div class="col-12 text-center my-5">
+            <h4 class="text-muted">Nenhuma promoção ativa no momento. Fica de olho nas nossas redes! 👀</h4>
+        </div>
+    }
+    else
+    {
+        @foreach (var promo in Model)
+        {
+            <div class="col-md-5 mb-4 mx-2">
+                <div class="card shadow-sm border-danger h-100 rounded-4">
+                    <div class="card-body text-center p-4">
+                        <h3 class="card-title text-danger fw-bold">@promo.Titulo</h3>
+                        <div class="display-3 text-success fw-bold my-3">@promo.PercentualDesconto% <span class="fs-4">OFF</span></div>
+                        <p class="card-text text-muted fs-5">@promo.Descricao</p>
+                    </div>
+                    <div class="card-footer bg-danger text-white text-center rounded-bottom-4 fw-bold">
+                        Válido até @(promo.DataFim?.ToString("dd/MM/yyyy"))
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
