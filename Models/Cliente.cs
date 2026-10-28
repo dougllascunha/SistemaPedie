@@ -11,6 +11,9 @@ public class Cliente
     public int IdCliente { get; set; }
     
     public string Nome { get; set; } = string.Empty;
+
+    [Column("nomeSocial")]
+    public string? NomeSocial { get; set; }
     
     public string Email { get; set; } = string.Empty;
     
