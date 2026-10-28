@@ -1,19 +1,18 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
-    <meta name="theme-color" content="#f790c9" /> <!--//==teste PWA==-->
+    <meta name="theme-color" content="#f790c9" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Pediê</title>
     
-    <link rel="icon" type="image/png" href="~/imagens/LogoPedie.png" /> <!--Icone do pedie na pagina web-->
-    <link rel="manifest" href="/manifest.webmanifest" /> <!--==teste PWA==-->
+    <link rel="icon" type="image/png" href="~/imagens/LogoPedie.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
     <style>
-        /* Evita que a barra inferior cubra o conteúdo da página no celular */
         @@media (max-width: 991px) {
             body { padding-bottom: 80px; }
         }
@@ -22,42 +21,35 @@
 
 <body>
 
-    <!-- MENU TOPO (Apenas PC, no celular só fica a logo) -->
     <header>
         <nav class="navbar bg-white shadow-sm border-bottom">
             <div class="container d-flex justify-content-between align-items-center">
 
-                <!-- Logo -->
                 <a class="navbar-brand mx-auto mx-lg-0" asp-controller="Home" asp-action="Index">
                     <img src="~/imagens/LogoPedie.png" alt="Pediê" class="logo-navbar fotologo" style="max-height: 60px;">
                 </a>
 
-                <!-- Links Topo (Escondidos no Celular pela classe d-none d-lg-flex) -->
                 <div class="d-none d-lg-flex align-items-center">
                     <a class="nav-link mx-2" asp-controller="Home" asp-action="Index">Início</a>
                     <a class="nav-link mx-2" href="#">Promoções</a>
                     <a class="nav-link mx-2 bi bi-cart3" asp-controller="Carrinho" asp-action="Index">Carrinho</a>
                     
-                    <!-- LÓGICA DE USUÁRIO LOGADO -->
                     @if (Context.Session.GetInt32("IdCliente") != null)
                     {
                         <a class="nav-link mx-2" asp-controller="Pedido" asp-action="MeusPedidos">Meus Pedidos</a>
 
-                        <!-- Aparece só para o Admin -->
                         @if (Context.Session.GetString("Perfil") == "Admin")
                         {
                             <a class="nav-link fw-bold text-danger mx-2 bi bi-gear" asp-controller="Pedido" asp-action="GerenciarPedidos"> Gestão de Pedidos</a>
                             <a class="nav-link fw-bold text-danger mx-2 bi bi-gear" asp-controller="Produto" asp-action="Index"> Gestão de Produtos</a>
                         }
 
-                        <!-- Botão de Sair (Desktop) -->
                         <div class="ms-4 border-start ps-4">
                             <a class="btn btn-outline-danger bi bi-box-arrow-left" asp-controller="Cliente" asp-action="Sair"> Sair</a>
                         </div>
                     }
                     else
                     {
-                        <!-- Botão ÚNICO de Entrar/Criar Conta para usuário NÃO logado -->
                         <div class="ms-4 border-start ps-4">
                             <a class="btn btn-primary" asp-controller="Cliente" asp-action="Login">Entrar / Criar Conta</a>
                         </div>
@@ -68,7 +60,6 @@
         </nav>
     </header>
 
-    <!-- MENU INFERIOR FIXO (Apenas Celular: d-flex d-lg-none) -->
     <nav class="navbar fixed-bottom bg-white border-top shadow-lg d-flex d-lg-none justify-content-around py-2" style="z-index: 1050;">
         <a asp-controller="Home" asp-action="Index" class="text-decoration-none text-dark text-center">
             <div class="fs-4 bi bi-house-door"></div>
@@ -88,13 +79,19 @@
             
             if (Context.Session.GetString("Perfil") == "Admin")
             {
-                <a asp-controller="Pedido" asp-action="GerenciarPedidos" class="text-decoration-none text-danger text-center">
-                    <div class="fs-4 bi bi-gear"></div>
-                    <small>Admin</small>
-                </a>
+                <!-- MENU DROPUP DO ADMIN COM ÍCONES -->
+                <div class="dropup text-center">
+                    <a href="#" class="text-decoration-none text-danger fw-bold" data-bs-toggle="dropdown" aria-expanded="false">
+                        <div class="fs-4 bi bi-gear"></div>
+                        <small>Admin</small>
+                    </a>
+                    <ul class="dropdown-menu mb-2 shadow border-danger">
+                        <li><a class="dropdown-item fw-bold text-danger bi bi-bag" asp-controller="Pedido" asp-action="GerenciarPedidos"> Gestão de Pedidos</a></li>
+                        <li><a class="dropdown-item fw-bold text-danger bi bi-gear" asp-controller="Produto" asp-action="Index"> Gestão de Produtos</a></li>
+                    </ul>
+                </div>
             }
 
-            <!-- Botão de Sair (Mobile) -->
             <a asp-controller="Cliente" asp-action="Sair" class="text-decoration-none text-danger text-center">
                 <div class="fs-4 box-arrow-left bi bi-box-arrow-left"></div>
                 <small>Sair</small>
@@ -109,7 +106,6 @@
         }
     </nav>
 
-    <!-- CONTEÚDO PRINCIPAL -->
     <main class="container mt-4 pb-5">
         @RenderBody()
     </main>
@@ -123,7 +119,6 @@
 
     @await RenderSectionAsync("Scripts", required: false)
     
-    <!--//==TESTE PWA==//-->
     <script>
     if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
@@ -134,7 +129,6 @@
                 ));
         });
     }
-</script>
-
+    </script>
 </body>
 </html>
