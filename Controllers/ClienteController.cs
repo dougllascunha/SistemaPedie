@@ -115,6 +115,7 @@ namespace pimFinal.Controllers
         }
 
         [HttpPost]
+    
         public IActionResult RedefinirSenha(string novaSenha)
         {
             if (TempData["IdRecuperacao"] != null)

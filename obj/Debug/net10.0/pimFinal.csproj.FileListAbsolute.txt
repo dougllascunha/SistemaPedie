@@ -226,3 +226,5 @@ D:\PROGRAMAS\pimFinal\obj\Debug\net10.0\pimFinal.csproj.Up2Date
 D:\PROGRAMAS\pimFinal\obj\Debug\net10.0\pimFinal.sourcelink.json
 D:\PROGRAMAS\pimFinal\obj\Debug\net10.0\compressed\y0ecwnixeu-{0}-v24j7n916b-v24j7n916b.gz
 D:\PROGRAMAS\pimFinal\obj\Debug\net10.0\compressed\7turx7ymvt-{0}-svaknnu950-svaknnu950.gz
+D:\PROGRAMAS\pimFinal\obj\Debug\net10.0\compressed\8o8p93vo91-{0}-2cln7v3paq-2cln7v3paq.gz
+D:\PROGRAMAS\pimFinal\obj\Debug\net10.0\compressed\5ddps35x7x-{0}-plhwpza1pj-plhwpza1pj.gz
