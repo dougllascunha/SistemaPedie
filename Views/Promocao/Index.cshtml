@@ -1,0 +1,42 @@
+@model IEnumerable<pimFinal.Models.Promocao>
+@{
+    ViewData["Title"] = "Gestão de Promoções";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-danger bi bi-tags"> Gestão de Promoções</h2>
+        <a asp-action="Criar" class="btn btn-success fw-bold">+ Nova Promoção</a>
+    </div>
+
+    <div class="table-responsive shadow-sm">
+        <table class="table table-hover align-middle bg-white border text-nowrap">
+            <thead class="table-dark">
+                <tr>
+                    <th>Título</th>
+                    <th>Desconto</th>
+                    <th>Início</th>
+                    <th>Fim</th>
+                    <th class="text-end">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td class="fw-bold text-primary">@item.Titulo</td>
+                        <td class="text-success fw-bold">@item.PercentualDesconto% OFF</td>
+                        <td>@(item.DataInicio?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td>@(item.DataFim?.ToString("dd/MM/yyyy") ?? "-")</td>
+                        <td class="text-end">
+                            <form asp-action="Deletar" method="post" class="d-inline" onsubmit="return confirm('Apagar esta promoção?');">
+                                <input type="hidden" name="idPromocao" value="@item.IdPromocao" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger bi bi-trash"> Apagar</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
