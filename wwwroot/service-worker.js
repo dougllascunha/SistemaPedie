@@ -1,10 +1,28 @@
-self.addEventListener("install", () => self.skipWaiting());
+const CACHE_NAME = 'pedie-cache-v1';
+const urlsToCache = [
+    '/',
+    '/css/site.css',
+    '/lib/bootstrap/dist/css/bootstrap.min.css',
+    '/imagens/LogoPedie.png'
+];
 
-self.addEventListener("activate", event => {
-    event.waitUntil(self.clients.claim());
+
+self.addEventListener('install', event => {
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then(cache => {
+                return cache.addAll(urlsToCache);
+            })
+    );
 });
-//== É UM WORKER QUE NÃO ATIVA O MODO OFFILINE NEM GUARDA DADOS==//TESTE PWA
-//Para testar o PWA primeiro precisa criar um certificado local e confiar nele com esse comando no terminal do projeto 
-//dotnet dev-certs https --trust
-//depois pode rodar esse de baixo que ele vai abrir normalmente 
-//dotnet run --launch-profile https
+
+
+self.addEventListener('fetch', event => {
+    event.respondWith(
+        caches.match(event.request)
+            .then(response => {
+                
+                return response || fetch(event.request);
+            })
+    );
+});
