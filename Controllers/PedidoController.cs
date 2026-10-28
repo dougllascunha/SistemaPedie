@@ -41,56 +41,102 @@ public class PedidoController : Controller
     }
 
     [HttpPost]
-    public IActionResult FinalizarCompra(string cep, string rua, string numero, string bairro, string cidade, string estado, string complemento)
-    {
-        var idCliente = HttpContext.Session.GetInt32("IdCliente");
-        if (idCliente == null) return RedirectToAction("Login", "Cliente", new { returnUrl = "/Pedido/ChecarPedido" });
-
-        var endereco = _context.Enderecos.FirstOrDefault(e => e.IdCliente == idCliente.Value);
-
-        if (endereco == null)
+        public IActionResult FinalizarCompra(string cep, string rua, string numero, string bairro, string cidade, string estado, string complemento)
         {
-            endereco = new Endereco { IdCliente = idCliente.Value, Cep = cep, Rua = rua, Numero = numero, Bairro = bairro, Cidade = cidade, Uf = estado, Complemento = complemento };
-            _context.Enderecos.Add(endereco);
-        }
-        else
-        {
-            endereco.Cep = cep; endereco.Rua = rua; endereco.Numero = numero; endereco.Bairro = bairro; endereco.Cidade = cidade; endereco.Uf = estado; endereco.Complemento = complemento;
-        }
+            var idCliente = HttpContext.Session.GetInt32("IdCliente");
+            if (idCliente == null) return RedirectToAction("Login", "Cliente");
 
-        var carrinhoJson = HttpContext.Session.GetString("Carrinho");
-        if (string.IsNullOrEmpty(carrinhoJson)) return RedirectToAction("Index", "Carrinho");
+            // 1. Salva ou atualiza o endereço do cliente
+            var endereco = _context.Enderecos.FirstOrDefault(e => e.IdCliente == idCliente.Value);
+            if (endereco == null)
+            {
+                endereco = new Endereco { IdCliente = idCliente.Value, Cep = cep, Rua = rua, Numero = numero, Bairro = bairro, Cidade = cidade, Uf = estado, Complemento = complemento };
+                _context.Enderecos.Add(endereco);
+            }
+            else
+            {
+                endereco.Cep = cep; endereco.Rua = rua; endereco.Numero = numero; endereco.Bairro = bairro; endereco.Cidade = cidade; endereco.Uf = estado; endereco.Complemento = complemento;
+            }
+            _context.SaveChanges();
 
-        var carrinho = JsonSerializer.Deserialize<List<int>>(carrinhoJson) ?? new List<int>();
-        var pedido = new Pedido { IdCliente = idCliente.Value, IdSituacao = 1, DataPedido = DateTime.Now, valorTotal = 0 };
-        
-        _context.Pedidos.Add(pedido);
-        _context.SaveChanges();
-
-        decimal totalPedido = 0;
-        var grupos = carrinho.GroupBy(id => id);
-
-        foreach (var grupo in grupos)
-        {
-            var produto = _context.Produtos.FirstOrDefault(p => p.IdProduto == grupo.Key);
-            if (produto == null) continue;
-
-            var itemPedido = new ItemPedido { IdPedido = pedido.IdPedido, IdProduto = produto.IdProduto, Quantidade = grupo.Count(), PrecoUnitario = produto.Preco };
-            _context.ItensPedido.Add(itemPedido);
-            totalPedido += produto.Preco * grupo.Count();
+            // 2. Redireciona para a tela de Pagamento
+            return RedirectToAction("Pagamento");
         }
 
-        pedido.valorTotal = totalPedido;
-        _context.SaveChanges();
-        HttpContext.Session.Remove("Carrinho");
+        [HttpGet]
+        public IActionResult Pagamento()
+        {
+            var idCliente = HttpContext.Session.GetInt32("IdCliente");
+            if (idCliente == null) return RedirectToAction("Login", "Cliente");
 
-        return RedirectToAction("Sucesso");
-    }
+            var carrinhoJson = HttpContext.Session.GetString("Carrinho");
+            if (string.IsNullOrEmpty(carrinhoJson)) return RedirectToAction("Index", "Carrinho");
 
-    public IActionResult Sucesso()
-    {
-        return View();
-    }
+            var carrinho = JsonSerializer.Deserialize<List<int>>(carrinhoJson) ?? new List<int>();
+            decimal subtotal = 0;
+
+            var grupos = carrinho.GroupBy(id => id);
+            foreach (var grupo in grupos)
+            {
+                var produto = _context.Produtos.FirstOrDefault(p => p.IdProduto == grupo.Key);
+                if (produto != null) subtotal += produto.Preco * grupo.Count();
+            }
+
+            ViewBag.TotalFinal = subtotal + 10m; // Adiciona o frete
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult ConfirmarPagamento()
+        {
+            var idCliente = HttpContext.Session.GetInt32("IdCliente");
+            if (idCliente == null) return RedirectToAction("Login", "Cliente");
+
+            var carrinhoJson = HttpContext.Session.GetString("Carrinho");
+            var carrinho = JsonSerializer.Deserialize<List<int>>(carrinhoJson ?? "[]") ?? new List<int>();
+
+            // Cria o Pedido final no banco com status 2 (Preparando/Pago)
+            var pedido = new Pedido
+            {
+                IdCliente = idCliente.Value,
+                IdSituacao = 2, // 2 = Preparando (Já consideramos pago)
+                DataPedido = DateTime.Now,
+                valorTotal = 0
+            };
+
+            _context.Pedidos.Add(pedido);
+            _context.SaveChanges();
+
+            decimal totalPedido = 0;
+            var grupos = carrinho.GroupBy(id => id);
+
+            foreach (var grupo in grupos)
+            {
+                var produto = _context.Produtos.FirstOrDefault(p => p.IdProduto == grupo.Key);
+                if (produto == null) continue;
+
+                var itemPedido = new ItemPedido
+                {
+                    IdPedido = pedido.IdPedido,
+                    IdProduto = produto.IdProduto,
+                    Quantidade = grupo.Count(),
+                    PrecoUnitario = produto.Preco
+                };
+                _context.ItensPedido.Add(itemPedido);
+                totalPedido += produto.Preco * grupo.Count();
+            }
+
+            pedido.valorTotal = totalPedido;
+            _context.SaveChanges();
+            HttpContext.Session.Remove("Carrinho"); // Limpa o carrinho
+
+            return RedirectToAction("Sucesso");
+        }
+
+        public IActionResult Sucesso()
+        {
+            return View();
+        }
 
     public IActionResult MeusPedidos()
     {
