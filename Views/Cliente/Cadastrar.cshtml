@@ -19,6 +19,12 @@
                         </div>
 
                         <div class="mb-3">
+                            <label asp-for="NomeSocial" class="form-label">Nome Social (Opcional)</label>
+                            <input asp-for="NomeSocial" class="form-control" placeholder="Como você prefere ser chamado(a)?" />
+                            <div class="form-text">Se preenchido, usaremos este nome para falar com você.</div>
+                        </div>
+
+                        <div class="mb-3">
                             <label asp-for="Email" class="form-label">E-mail</label>
                             <input asp-for="Email" type="email" class="form-control" placeholder="exemplo@email.com" required />
                         </div>
