@@ -1,0 +1,52 @@
+@model pimFinal.Models.Promocao
+@{
+    ViewData["Title"] = "Nova Promoção";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0 bi bi-tag"> Adicionar Promoção / Lançamento</h4>
+                </div>
+                <div class="card-body p-4 bg-white border border-top-0 rounded-bottom">
+                    <form asp-action="Criar" method="post">
+                        
+                        <div class="mb-3">
+                            <label asp-for="Titulo" class="form-label fw-bold">Título da Promoção</label>
+                            <input asp-for="Titulo" class="form-control" placeholder="Ex: Black Friday Pediê" required />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Descricao" class="form-label fw-bold">Descrição</label>
+                            <textarea asp-for="Descricao" class="form-control" rows="2" placeholder="Ex: Todos os doces finos com desconto!"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="PercentualDesconto" class="form-label fw-bold">Percentual de Desconto (%)</label>
+                            <input asp-for="PercentualDesconto" type="number" step="0.01" class="form-control" placeholder="Ex: 15" required />
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="DataInicio" class="form-label fw-bold">Data de Início</label>
+                                <input asp-for="DataInicio" type="date" class="form-control" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="DataFim" class="form-label fw-bold">Data de Término</label>
+                                <input asp-for="DataFim" type="date" class="form-control" required />
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary me-md-2">Cancelar</a>
+                            <button type="submit" class="btn btn-success fw-bold">Salvar Promoção</button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
