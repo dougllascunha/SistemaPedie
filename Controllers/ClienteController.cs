@@ -55,11 +55,14 @@ namespace pimFinal.Controllers
 
             if (cliente != null)
             {
+                string nomeExibicao = !string.IsNullOrWhiteSpace(cliente.NomeSocial) ? cliente.NomeSocial : cliente.Nome;
+
                 HttpContext.Session.SetInt32("IdCliente", cliente.IdCliente);
-                HttpContext.Session.SetString("NomeCliente", cliente.Nome);
+                
+                HttpContext.Session.SetString("NomeCliente", nomeExibicao); 
                 HttpContext.Session.SetString("Perfil", cliente.Perfil);
-               
-                TempData["Mensagem"] = $"Bem-vindo de volta, {cliente.Nome}!";
+
+                TempData["Mensagem"] = $"Bem-vindo(a) de volta, {nomeExibicao}!";
 
                 if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
                 {
