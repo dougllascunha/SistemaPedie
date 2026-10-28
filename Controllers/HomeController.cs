@@ -44,6 +44,15 @@ public class HomeController : Controller
         var produtos = query.ToList();
         return View(produtos);
     }
+    public IActionResult Promocoes()
+    {
+        // Puxa apenas as promoções que estão dentro do prazo de validade
+        var promocoesAtivas = _context.Promocoes
+            .Where(p => p.DataInicio <= System.DateTime.Now && p.DataFim >= System.DateTime.Now)
+            .ToList();
+            
+        return View(promocoesAtivas);
+    }
 
     public IActionResult Privacy()
     {
