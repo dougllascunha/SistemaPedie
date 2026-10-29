@@ -4,47 +4,65 @@
     ViewData["Title"] = "Gestão de Pedidos (Admin)";
 }
 
-<div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="text-danger bi bi-gear"> Painel de Controle de Pedidos</h2>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h2 class="text-danger fw-bold mb-0"><i class="bi bi-gear-fill me-2"></i>Painel de Controle de Pedidos</h2>
+        <span class="badge bg-secondary fs-6">@Model.Count() pedido(s)</span>
     </div>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info text-center">Nenhum pedido foi realizado no site ainda.</div>
+        <div class="alert alert-info text-center shadow-sm">Nenhum pedido foi realizado no site ainda.</div>
     }
     else
     {
-        <div class="table-responsive shadow-sm">
-            <table class="table table-hover align-middle bg-white border">
+        <div class="table-responsive shadow-sm rounded-4 bg-white p-2">
+            <table class="table table-hover align-middle mb-0">
                 <thead class="table-dark">
                     <tr>
                         <th>Nº Pedido</th>
                         <th>Cliente</th>
                         <th>Data</th>
                         <th>Total</th>
-                        <th>Status e Ações</th>
+                        <th>Status Atual</th>
+                        <th style="min-width: 320px;">Alterar Status e Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var pedido in Model)
                     {
+                        var badgeClass = pedido.IdSituacao switch
+                        {
+                            1 => "bg-warning text-dark",
+                            2 => "bg-info text-dark",
+                            3 => "bg-primary",
+                            4 => "bg-success",
+                            5 => "bg-primary",
+                            6 => "bg-danger",
+                            _ => "bg-secondary"
+                        };
+
                         <tr>
                             <td class="fw-bold">#@pedido.IdPedido</td>
-                            
-                            <!-- Exibe o nome do cliente que comprou -->
-                            <td>@pedido.Cliente.Nome</td> 
-                            
-                            <td>@pedido.DataPedido.ToString("dd/MM/yyyy HH:mm")</td>
-                            
-                            <td class="text-success fw-bold">R$ @pedido.valorTotal.ToString("F2")</td>
-                            
                             <td>
-                                <!-- Formulário rápido para o Admin mudar o status do pedido na própria tabela -->
-                                <form asp-controller="Pedido" asp-action="AtualizarStatus" method="post" class="d-flex align-items-center">
+                                <div class="fw-semibold">@(pedido.Cliente?.Nome ?? "Cliente")</div>
+                                @if (!string.IsNullOrWhiteSpace(pedido.Cliente?.NomeSocial))
+                                {
+                                    <small class="text-muted">(@pedido.Cliente.NomeSocial)</small>
+                                }
+                            </td>
+                            <td class="text-nowrap">@pedido.DataPedido.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="text-success fw-bold text-nowrap">R$ @pedido.valorTotal.ToString("N2")</td>
+                            <td>
+                                <span class="badge @badgeClass px-3 py-2">
+                                    @(pedido.Situacao?.Descricao ?? "Indefinido")
+                                </span>
+                            </td>
+                            <td>
+                                <form asp-controller="Pedido" asp-action="AtualizarStatus" method="post" class="d-flex align-items-center gap-2 flex-nowrap">
                                     <input type="hidden" name="idPedido" value="@pedido.IdPedido" />
-                                    
-                                    <select name="idSituacao" class="form-select form-select-sm me-2" style="max-width: 180px;">
+
+                                    <select name="idSituacao" class="form-select form-select-sm" style="min-width: 230px;">
                                         @foreach (var sit in ViewBag.Situacoes)
                                         {
                                             if (sit.IdSituacao == pedido.IdSituacao)
@@ -57,8 +75,10 @@
                                             }
                                         }
                                     </select>
-                                    
-                                    <button type="submit" class="btn btn-sm btn-primary">Salvar</button>
+
+                                    <button type="submit" class="btn btn-sm btn-primary text-nowrap px-3">
+                                        <i class="bi bi-check2 me-1"></i>Salvar
+                                    </button>
                                 </form>
                             </td>
                         </tr>

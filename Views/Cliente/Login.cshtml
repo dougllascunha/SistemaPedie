@@ -17,14 +17,6 @@
                         </div>
                     }
 
-                    <!-- Exibe mensagem de sucesso caso venha da tela de cadastro -->
-                    @if (TempData["Mensagem"] != null)
-                    {
-                        <div class="alert alert-success text-center">
-                            @TempData["Mensagem"]
-                        </div>
-                    }
-
                     <form asp-controller="Cliente" asp-action="Login" method="post">
                         <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
                         
@@ -43,8 +35,13 @@
                         </div>
                         
                         <div class="text-center">
-                            <p class="mb-1"><a asp-controller="Cliente" asp-action="RecuperarSenha" class="text-decoration-none">Esqueci minha senha</a></p>
-                            <p>Não tem uma conta? <a asp-controller="Cliente" asp-action="Cadastrar" class="text-decoration-none fw-bold">Cadastre-se</a></p>
+                            <p class="mb-1">
+                                <a asp-controller="Cliente" asp-action="RecuperarSenha" asp-route-returnUrl="@ViewBag.ReturnUrl" class="text-decoration-none">Esqueci minha senha</a>
+                            </p>
+                            <p>
+                                Não tem uma conta?
+                                <a asp-controller="Cliente" asp-action="Cadastrar" asp-route-returnUrl="@ViewBag.ReturnUrl" class="text-decoration-none fw-bold">Cadastre-se</a>
+                            </p>
                         </div>
 
                     </form>

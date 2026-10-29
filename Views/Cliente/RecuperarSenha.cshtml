@@ -16,6 +16,8 @@
                     }
 
                     <form asp-controller="Cliente" asp-action="RecuperarSenha" method="post">
+                        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+
                         <div class="mb-3">
                             <label for="email" class="form-label">E-mail Cadastrado</label>
                             <input type="email" name="email" class="form-control" required />
@@ -28,7 +30,7 @@
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary btn-lg">Validar Dados</button>
-                            <a asp-action="Login" class="btn btn-outline-secondary">Cancelar</a>
+                            <a asp-action="Login" asp-route-returnUrl="@ViewBag.ReturnUrl" class="btn btn-outline-secondary">Cancelar</a>
                         </div>
                     </form>
                 </div>

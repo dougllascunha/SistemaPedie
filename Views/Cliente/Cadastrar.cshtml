@@ -11,7 +11,15 @@
                 <div class="card-body p-5">
                     <h2 class="text-center mb-4">Registe a sua Conta</h2>
 
+                    @if (ViewBag.Erro != null)
+                    {
+                        <div class="alert alert-danger text-center">
+                            @ViewBag.Erro
+                        </div>
+                    }
+
                     <form asp-controller="Cliente" asp-action="Cadastrar" method="post">
+                        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
                         
                         <div class="mb-3">
                             <label asp-for="Nome" class="form-label">Nome Completo</label>
@@ -37,12 +45,12 @@
                         <!-- Campo de senha adicionado e mapeado para SenhaAcesso -->
                         <div class="mb-3">
                             <label asp-for="SenhaAcesso" class="form-label">Senha</label>
-                            <input asp-for="SenhaAcesso" type="password" class="form-control" placeholder="Crie uma senha segura" required />
+                            <input asp-for="SenhaAcesso" type="password" class="form-control" placeholder="Crie uma senha segura" required minlength="6" />
                         </div>
 
                         <div class="d-grid gap-2 mt-4">
                             <button type="submit" class="btn btn-primary btn-lg">Finalizar Registro</button>
-                            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Cancelar</a>
+                            <a asp-controller="Cliente" asp-action="Login" asp-route-returnUrl="@ViewBag.ReturnUrl" class="btn btn-outline-secondary">Voltar para o Login</a>
                         </div>
 
                     </form>

@@ -1,5 +1,7 @@
 @{
     ViewData["Title"] = "Pagamento";
+    string formaPagamento = ViewBag.FormaPagamento as string ?? "PIX";
+    bool abaCartaoAtiva = formaPagamento == "CartaoCredito" || formaPagamento == "CartaoDebito";
 }
 
 <div class="container mt-5">
@@ -8,63 +10,110 @@
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-white text-center border-bottom-0 pt-4">
                     <h3 class="fw-bold text-success">Finalizar Pagamento</h3>
-                    <p class="text-muted">Total a pagar: <strong class="fs-4 text-dark">R$ @ViewBag.TotalFinal.ToString("F2")</strong></p>
+                    <p class="text-muted mb-0">
+                        Total a pagar: <strong class="fs-4 text-dark">R$ @ViewBag.TotalFinal.ToString("N2")</strong>
+                    </p>
                 </div>
                 <div class="card-body p-4">
-                    
+
+                    <div id="alertaPagamentoIncompleto" class="alert alert-danger d-none" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        Preencha todos os dados do cartão corretamente antes de confirmar o pagamento.
+                    </div>
+
                     <!-- Abas de Pagamento -->
                     <ul class="nav nav-pills nav-justified mb-4" id="pagamentoTabs" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active fw-bold" id="pix-tab" data-bs-toggle="pill" data-bs-target="#pix" type="button" role="tab">PIX</button>
+                            <button class="nav-link @(!abaCartaoAtiva ? "active" : "") fw-bold"
+                                    id="pix-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#pix"
+                                    type="button"
+                                    role="tab">
+                                <i class="bi bi-qr-code me-1"></i> PIX
+                            </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link fw-bold" id="cartao-tab" data-bs-toggle="pill" data-bs-target="#cartao" type="button" role="tab">Cartão de Crédito</button>
+                            <button class="nav-link @(abaCartaoAtiva ? "active" : "") fw-bold"
+                                    id="cartao-tab"
+                                    data-bs-toggle="pill"
+                                    data-bs-target="#cartao"
+                                    type="button"
+                                    role="tab">
+                                <i class="bi bi-credit-card me-1"></i> Cartão
+                            </button>
                         </li>
                     </ul>
 
                     <div class="tab-content" id="pagamentoTabsContent">
-                        
-                        <!-- ABA DO PIX (A que realmente funciona) -->
-                        <div class="tab-pane fade show active text-center" id="pix" role="tabpanel">
+
+                        <!-- ABA DO PIX -->
+                        <div class="tab-pane fade @(!abaCartaoAtiva ? "show active" : "") text-center" id="pix" role="tabpanel">
                             <h5 class="mb-3">Escaneie o QR Code abaixo</h5>
-                            
-                            <!-- Substitua a imagem abaixo pelo seu QR Code real -->
+
                             <img src="~/imagens/qrcode-pix.jpeg" alt="QR Code PIX" class="img-fluid border rounded p-2 mb-3" style="max-width: 250px;">
-                            
+
                             <div class="alert alert-warning">
                                 <div class="spinner-border spinner-border-sm text-warning me-2" role="status"></div>
                                 Aguardando confirmação do banco...
-                                <br/>
-                                <small class="fw-bold">Redirecionando em <span id="contador">60</span> segundos</small>
+                                <br />
+                                <small class="fw-bold">Validação automática em <span id="contador">60</span> segundos</small>
                             </div>
 
-                            <!-- Formulário invisível que o JavaScript vai disparar -->
+                            <!-- Formulário invisível que o JavaScript dispara ao fim do timer ou no botão -->
                             <form asp-action="ConfirmarPagamento" method="post" id="formPix">
                             </form>
 
-                            <!-- Dica de Apresentação: Um botão escondido caso o professor não queira esperar os 60 segundos inteiros -->
-                            <button type="button" onclick="document.getElementById('formPix').submit();" class="btn btn-sm btn-outline-success mt-2">
-                                Forçar Validação (Para Apresentação)
-                            </button>
+                            <div class="d-flex flex-column gap-2 mt-3">
+                                <button type="button" id="btnConfirmarPix" class="btn btn-success fw-bold">
+                                    <i class="bi bi-check-circle me-1"></i> Já realizei o PIX / Confirmar Pagamento
+                                </button>
+                                <a asp-action="ChecarPedido" class="btn btn-outline-secondary btn-sm">
+                                    Voltar e revisar endereço
+                                </a>
+                            </div>
                         </div>
 
-                        <!-- ABA DO CARTÃO (Enfeite) -->
-                        <div class="tab-pane fade" id="cartao" role="tabpanel">
-                            <div class="mb-3">
-                                <label class="form-label">Número do Cartão</label>
-                                <input type="text" class="form-control" placeholder="0000 0000 0000 0000" disabled>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 mb-3">
-                                    <label class="form-label">Validade</label>
-                                    <input type="text" class="form-control" placeholder="MM/AA" disabled>
+                        <!-- ABA DO CARTÃO -->
+                        <div class="tab-pane fade @(abaCartaoAtiva ? "show active" : "")" id="cartao" role="tabpanel">
+                            <form asp-action="ConfirmarPagamento" method="post" id="formCartao" novalidate>
+                                <div class="mb-3">
+                                    <label for="numeroCartao" class="form-label">Número do Cartão *</label>
+                                    <input type="text" id="numeroCartao" name="numeroCartao"
+                                           class="form-control campo-cartao-obrigatorio"
+                                           placeholder="0000 0000 0000 0000"
+                                           maxlength="19" required />
                                 </div>
-                                <div class="col-6 mb-3">
-                                    <label class="form-label">CVV</label>
-                                    <input type="text" class="form-control" placeholder="123" disabled>
+                                <div class="mb-3">
+                                    <label for="nomeTitular" class="form-label">Nome Impresso no Cartão *</label>
+                                    <input type="text" id="nomeTitular" name="nomeTitular"
+                                           class="form-control campo-cartao-obrigatorio"
+                                           placeholder="NOME COMO NO CARTÃO"
+                                           required />
                                 </div>
-                            </div>
-                            <button type="button" class="btn btn-secondary w-100" disabled>Função Indisponível no Momento</button>
+                                <div class="row">
+                                    <div class="col-6 mb-3">
+                                        <label for="validadeCartao" class="form-label">Validade (MM/AA) *</label>
+                                        <input type="text" id="validadeCartao" name="validadeCartao"
+                                               class="form-control campo-cartao-obrigatorio"
+                                               placeholder="MM/AA"
+                                               maxlength="5" required />
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <label for="cvvCartao" class="form-label">CVV *</label>
+                                        <input type="text" id="cvvCartao" name="cvvCartao"
+                                               class="form-control campo-cartao-obrigatorio"
+                                               placeholder="123"
+                                               maxlength="4" required />
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-success btn-lg w-100 fw-bold mt-2">
+                                    <i class="bi bi-shield-lock-fill me-1"></i> Confirmar Pagamento com Cartão
+                                </button>
+                                <a asp-action="ChecarPedido" class="btn btn-outline-secondary btn-sm w-100 mt-2">
+                                    Voltar e revisar endereço
+                                </a>
+                            </form>
                         </div>
 
                     </div>
@@ -77,18 +126,136 @@
 
 @section Scripts {
     <script>
-        let tempoRestante = 60;
-        const contadorElemento = document.getElementById('contador');
-        const formPix = document.getElementById('formPix');
+        document.addEventListener("DOMContentLoaded", function () {
+            let tempoRestante = 60;
+            const contadorElemento = document.getElementById('contador');
+            const formPix = document.getElementById('formPix');
+            const btnConfirmarPix = document.getElementById('btnConfirmarPix');
+            const pixTab = document.getElementById('pix-tab');
+            const cartaoTab = document.getElementById('cartao-tab');
+            const formCartao = document.getElementById('formCartao');
+            const alertaPagamento = document.getElementById('alertaPagamentoIncompleto');
 
-        const timer = setInterval(() => {
-            tempoRestante--;
-            contadorElemento.innerText = tempoRestante;
+            let abaPixAtiva = pixTab && pixTab.classList.contains('active');
 
-            if (tempoRestante <= 0) {
-                clearInterval(timer);
-                formPix.submit(); // Envia para a tela de Sucesso e salva o pedido
+            if (pixTab && cartaoTab) {
+                pixTab.addEventListener('shown.bs.tab', function () {
+                    abaPixAtiva = true;
+                    if (alertaPagamento) alertaPagamento.classList.add('d-none');
+                });
+                cartaoTab.addEventListener('shown.bs.tab', function () {
+                    abaPixAtiva = false;
+                });
             }
-        }, 1000);
+
+            if (btnConfirmarPix && formPix) {
+                btnConfirmarPix.addEventListener('click', function () {
+                    formPix.submit();
+                });
+            }
+
+            const timer = setInterval(() => {
+                if (!abaPixAtiva) return; // Pausa o contador quando o usuário está preenchendo o cartão
+                tempoRestante--;
+                if (contadorElemento) contadorElemento.innerText = tempoRestante;
+
+                if (tempoRestante <= 0) {
+                    clearInterval(timer);
+                    if (formPix) formPix.submit();
+                }
+            }, 1000);
+
+            // Impede que pressionar Enter finalize a compra sem preencher todos os campos
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    // Se estiver na aba PIX, Enter não deve disparar submissão acidental
+                    if (abaPixAtiva) {
+                        e.preventDefault();
+                        return;
+                    }
+                }
+            });
+
+            if (formCartao) {
+                const camposCartao = Array.from(formCartao.querySelectorAll('.campo-cartao-obrigatorio'));
+
+                // Máscaras simples para facilitar preenchimento
+                const numInput = document.getElementById('numeroCartao');
+                if (numInput) {
+                    numInput.addEventListener('input', function () {
+                        let v = this.value.replace(/\D/g, '').substring(0, 16);
+                        this.value = v.replace(/(\d{4})(?=\d)/g, '$1 ');
+                    });
+                }
+
+                const valInput = document.getElementById('validadeCartao');
+                if (valInput) {
+                    valInput.addEventListener('input', function () {
+                        let v = this.value.replace(/\D/g, '').substring(0, 4);
+                        if (v.length >= 3) {
+                            this.value = v.substring(0, 2) + '/' + v.substring(2);
+                        } else {
+                            this.value = v;
+                        }
+                    });
+                }
+
+                const cvvInput = document.getElementById('cvvCartao');
+                if (cvvInput) {
+                    cvvInput.addEventListener('input', function () {
+                        this.value = this.value.replace(/\D/g, '').substring(0, 4);
+                    });
+                }
+
+                // Ao apertar Enter em um campo do cartão, avança para o próximo campo vazio em vez de submeter incompleto
+                camposCartao.forEach((campo, idx) => {
+                    campo.addEventListener('keydown', function (e) {
+                        if (e.key === 'Enter') {
+                            const primeiroVazio = camposCartao.find(c => !c.value.trim());
+                            if (primeiroVazio) {
+                                e.preventDefault();
+                                if (alertaPagamento) alertaPagamento.classList.remove('d-none');
+                                primeiroVazio.classList.add('is-invalid');
+                                primeiroVazio.focus();
+                            }
+                        }
+                    });
+
+                    campo.addEventListener('input', function () {
+                        if (this.value.trim()) {
+                            this.classList.remove('is-invalid');
+                        }
+                    });
+                });
+
+                formCartao.addEventListener('submit', function (e) {
+                    let valido = true;
+                    let primeiroInvalido = null;
+
+                    camposCartao.forEach(campo => {
+                        const valor = campo.value.trim();
+                        let campoOk = valor.length > 0;
+
+                        if (campo.id === 'numeroCartao' && valor.replace(/\D/g, '').length < 13) campoOk = false;
+                        if (campo.id === 'validadeCartao' && valor.length < 5) campoOk = false;
+                        if (campo.id === 'cvvCartao' && valor.length < 3) campoOk = false;
+
+                        if (!campoOk) {
+                            valido = false;
+                            campo.classList.add('is-invalid');
+                            if (!primeiroInvalido) primeiroInvalido = campo;
+                        } else {
+                            campo.classList.remove('is-invalid');
+                        }
+                    });
+
+                    if (!valido) {
+                        e.preventDefault();
+                        if (alertaPagamento) alertaPagamento.classList.remove('d-none');
+                        if (primeiroInvalido) primeiroInvalido.focus();
+                    }
+                });
+            }
+        });
     </script>
 }

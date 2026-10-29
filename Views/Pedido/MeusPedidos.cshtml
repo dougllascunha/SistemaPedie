@@ -4,20 +4,20 @@
     ViewData["Title"] = "Meus Pedidos";
 }
 
-<div class="container mt-5">
-    <h2 class="mb-4">Meus Pedidos</h2>
+<div class="container mt-4">
+    <h2 class="mb-4 fw-bold"><i class="bi bi-bag-check me-2 text-primary"></i>Meus Pedidos</h2>
 
     @if (!Model.Any())
     {
-        <div class="alert alert-info text-center">
-            Você ainda não realizou nenhum pedido. 
-            <a asp-controller="Home" asp-action="Index" class="alert-link">Clique aqui para ver nossos doces!</a>
+        <div class="alert alert-info text-center shadow-sm p-4 rounded-4">
+            Você ainda não realizou nenhum pedido.
+            <a asp-controller="Home" asp-action="Index" class="alert-link fw-bold ms-1">Clique aqui para ver nossos doces!</a>
         </div>
     }
     else
     {
-        <div class="table-responsive shadow-sm">
-            <table class="table table-hover table-bordered align-middle bg-white text-nowrap">
+        <div class="table-responsive shadow-sm rounded-4 bg-white p-2">
+            <table class="table table-hover align-middle mb-0 text-nowrap">
                 <thead class="table-light">
                     <tr>
                         <th>Nº do Pedido</th>
@@ -29,26 +29,57 @@
                 <tbody>
                     @foreach (var pedido in Model)
                     {
+                        var badgeClass = pedido.IdSituacao switch
+                        {
+                            1 => "bg-warning text-dark",
+                            2 => "bg-info text-dark",
+                            3 => "bg-primary",
+                            4 => "bg-success",
+                            5 => "bg-primary",
+                            6 => "bg-danger",
+                            _ => "bg-secondary"
+                        };
+
                         <tr>
                             <td class="fw-bold">#@pedido.IdPedido</td>
                             <td>@pedido.DataPedido.ToString("dd/MM/yyyy HH:mm")</td>
-                            
                             <td>
-                                <span class="badge @(pedido.IdSituacao == 1 ? "bg-warning text-dark" : 
-                                                    pedido.IdSituacao == 4 ? "bg-success" : "bg-primary")">
-                                    @pedido.Situacao.Descricao
+                                <span class="badge @badgeClass px-3 py-2">
+                                    @(pedido.Situacao?.Descricao ?? "Em processamento")
                                 </span>
-                                
-                                <!-- Tempo estimado inserido aqui -->
-                                @if (pedido.IdSituacao == 1 || pedido.IdSituacao == 2 || pedido.IdSituacao == 3)
+
+                                @if (pedido.IdSituacao == 1 || pedido.IdSituacao == 2)
                                 {
-                                    <div class="text-muted mt-1 fw-bold" style="font-size: 0.85rem;">
+                                    <div class="text-muted mt-1 fw-semibold" style="font-size: 0.85rem;">
                                         ⏳ Previsão: 1h a 3h30 min
                                     </div>
                                 }
+                                else if (pedido.IdSituacao == 5)
+                                {
+                                    <div class="text-primary mt-1 fw-semibold" style="font-size: 0.85rem;">
+                                        🛵 Seu pedido saiu para entrega!
+                                    </div>
+                                }
+                                else if (pedido.IdSituacao == 3)
+                                {
+                                    <div class="text-primary mt-1 fw-semibold" style="font-size: 0.85rem;">
+                                        🏪 Pronto! Disponível para retirada na loja.
+                                    </div>
+                                }
+                                else if (pedido.IdSituacao == 4)
+                                {
+                                    <div class="text-success mt-1 fw-semibold" style="font-size: 0.85rem;">
+                                        ✅ Pedido entregue
+                                    </div>
+                                }
+                                else if (pedido.IdSituacao == 6)
+                                {
+                                    <div class="text-danger mt-1 fw-semibold" style="font-size: 0.85rem;">
+                                        ❌ Pedido cancelado
+                                    </div>
+                                }
                             </td>
-                            
-                            <td class="text-success fw-bold">R$ @pedido.valorTotal.ToString("F2")</td>
+                            <td class="text-success fw-bold">R$ @pedido.valorTotal.ToString("N2")</td>
                         </tr>
                     }
                 </tbody>

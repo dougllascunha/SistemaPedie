@@ -2,7 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using pimFinal.Data;
 using pimFinal.Models;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace pimFinal.Controllers
 {
@@ -15,16 +17,33 @@ namespace pimFinal.Controllers
             _context = context;
         }
 
+        private bool CarrinhoTemItens()
+        {
+            var carrinhoJson = HttpContext.Session.GetString("Carrinho");
+            if (string.IsNullOrEmpty(carrinhoJson)) return false;
+            var itens = JsonSerializer.Deserialize<List<int>>(carrinhoJson);
+            return itens != null && itens.Count > 0;
+        }
+
         // --- MÉTODOS DE CADASTRO ---
         [HttpGet]
-        public IActionResult Cadastrar()
+        public IActionResult Cadastrar(string? returnUrl)
         {
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
         [HttpPost]
-        public IActionResult Cadastrar(Cliente cliente)
+        public IActionResult Cadastrar(Cliente cliente, string? returnUrl)
         {
+            ViewBag.ReturnUrl = returnUrl;
+
+            if (_context.Clientes.Any(c => c.Email == cliente.Email))
+            {
+                ViewBag.Erro = "Este e-mail já está cadastrado. Faça login ou recupere sua senha.";
+                return View(cliente);
+            }
+
             if (ModelState.IsValid)
             {
                 cliente.Perfil = "Cliente";
@@ -33,8 +52,8 @@ namespace pimFinal.Controllers
                 _context.Clientes.Add(cliente);
                 _context.SaveChanges();
 
-                TempData["Mensagem"] = "Conta criada com sucesso! Faça seu login.";
-                return RedirectToAction("Login");
+                TempData["Mensagem"] = "Conta criada com sucesso! Faça seu login para continuar.";
+                return RedirectToAction("Login", new { returnUrl });
             }
             return View(cliente);
         }
@@ -58,20 +77,29 @@ namespace pimFinal.Controllers
                 string nomeExibicao = !string.IsNullOrWhiteSpace(cliente.NomeSocial) ? cliente.NomeSocial : cliente.Nome;
 
                 HttpContext.Session.SetInt32("IdCliente", cliente.IdCliente);
-                
-                HttpContext.Session.SetString("NomeCliente", nomeExibicao); 
+                HttpContext.Session.SetString("NomeCliente", nomeExibicao);
                 HttpContext.Session.SetString("Perfil", cliente.Perfil);
 
                 TempData["Mensagem"] = $"Bem-vindo(a) de volta, {nomeExibicao}!";
 
-                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                // Se houver itens no carrinho e o returnUrl for vazio ou apontar para a Home,
+                // redireciona o cliente diretamente de volta para o Carrinho para concluir a compra.
+                if (CarrinhoTemItens() &&
+                    (string.IsNullOrEmpty(returnUrl) ||
+                     returnUrl == "/" ||
+                     returnUrl.StartsWith("/Home", StringComparison.OrdinalIgnoreCase)))
+                {
+                    return RedirectToAction("Index", "Carrinho");
+                }
+
+                if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl) && returnUrl != "/")
                 {
                     return LocalRedirect(returnUrl);
                 }
 
-                return RedirectToAction("Index", "Home");
+                return Redirect("/?auth=1");
             }
-            
+
             ViewBag.Erro = "E-mail ou senha incorretos.";
             ViewBag.ReturnUrl = returnUrl;
             return View();
@@ -79,27 +107,31 @@ namespace pimFinal.Controllers
 
         public IActionResult Sair()
         {
-            HttpContext.Session.Clear(); // Apaga todos os dados do usuário logado
-            return RedirectToAction("Index", "Home");
+            HttpContext.Session.Clear(); // Apaga todos os dados da sessão do usuário logado
+            TempData["Mensagem"] = "Você saiu da sua conta.";
+            return Redirect("/?logout=1");
         }
 
         // --- MÉTODOS DE RECUPERAÇÃO DE SENHA ---
         [HttpGet]
-        public IActionResult RecuperarSenha()
+        public IActionResult RecuperarSenha(string? returnUrl)
         {
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
         [HttpPost]
-        public IActionResult RecuperarSenha(string email, string telefone)
+        public IActionResult RecuperarSenha(string email, string telefone, string? returnUrl)
         {
-            // Validação simples (2FA Acadêmico): Confere se e-mail e telefone batem no banco
+            ViewBag.ReturnUrl = returnUrl;
+
+            // Validação dupla (2FA Acadêmico): Confere se e-mail e telefone batem no banco
             var cliente = _context.Clientes.FirstOrDefault(c => c.Email == email && c.Telefone == telefone);
-            
+
             if (cliente != null)
             {
-                // Guarda o ID do cliente temporariamente para a próxima tela
                 TempData["IdRecuperacao"] = cliente.IdCliente;
+                TempData["ReturnUrlRecuperacao"] = returnUrl;
                 return RedirectToAction("RedefinirSenha");
             }
 
@@ -110,29 +142,28 @@ namespace pimFinal.Controllers
         [HttpGet]
         public IActionResult RedefinirSenha()
         {
-            // Se o usuário tentar acessar essa tela direto pela URL, é bloqueado
             if (TempData["IdRecuperacao"] == null) return RedirectToAction("Login");
-            
-            TempData.Keep("IdRecuperacao"); // Mantém o valor para o POST
+
+            TempData.Keep("IdRecuperacao");
+            TempData.Keep("ReturnUrlRecuperacao");
             return View();
         }
 
         [HttpPost]
-    
         public IActionResult RedefinirSenha(string novaSenha)
         {
-            if (TempData["IdRecuperacao"] != null)
+            if (TempData["IdRecuperacao"] is int idCliente)
             {
-                int idCliente = (int)TempData["IdRecuperacao"];
+                string? returnUrl = TempData["ReturnUrlRecuperacao"] as string;
                 var cliente = _context.Clientes.FirstOrDefault(c => c.IdCliente == idCliente);
-                
-                if (cliente != null)
+
+                if (cliente != null && !string.IsNullOrWhiteSpace(novaSenha))
                 {
-                    cliente.SenhaAcesso = novaSenha; // Atualiza a senha
+                    cliente.SenhaAcesso = novaSenha;
                     _context.SaveChanges();
-                    
+
                     TempData["Mensagem"] = "Senha redefinida com sucesso! Faça seu login.";
-                    return RedirectToAction("Login");
+                    return RedirectToAction("Login", new { returnUrl });
                 }
             }
             return RedirectToAction("Login");

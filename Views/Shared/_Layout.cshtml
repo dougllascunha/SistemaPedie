@@ -1,3 +1,26 @@
+@using System.Text.Json
+@{
+    var carrinhoJson = Context.Session.GetString("Carrinho");
+    int qtdCarrinho = 0;
+    if (!string.IsNullOrEmpty(carrinhoJson))
+    {
+        try
+        {
+            var listaCarrinho = JsonSerializer.Deserialize<List<int>>(carrinhoJson);
+            qtdCarrinho = listaCarrinho?.Count ?? 0;
+        }
+        catch
+        {
+            qtdCarrinho = 0;
+        }
+    }
+
+    var caminhoAtual = Context.Request.Path.Value ?? "/";
+    var queryAtual = Context.Request.QueryString.Value ?? "";
+    var urlRetorno = caminhoAtual.StartsWith("/Cliente", System.StringComparison.OrdinalIgnoreCase)
+        ? (ViewBag.ReturnUrl as string ?? "/")
+        : (caminhoAtual + queryAtual);
+}
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -9,12 +32,15 @@
     
     <link rel="icon" type="image/png" href="~/imagens/LogoPedie.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
     <style>
         @@media (max-width: 991px) {
-            body { padding-bottom: 80px; }
+            body { padding-bottom: 85px; }
         }
     </style>
 </head>
@@ -22,38 +48,63 @@
 <body>
 
     <header>
-        <nav class="navbar bg-white shadow-sm border-bottom">
-            <div class="container d-flex justify-content-between align-items-center">
+        <nav class="navbar bg-white shadow-sm border-bottom py-2">
+            <div class="container d-flex justify-content-between align-items-center flex-wrap">
 
-                <a class="navbar-brand mx-auto mx-lg-0" asp-controller="Home" asp-action="Index">
-                    <img src="~/imagens/LogoPedie.png" alt="Pediê" class="logo-navbar fotologo" style="max-height: 60px;">
+                <a class="navbar-brand mx-auto mx-lg-0 py-0" asp-controller="Home" asp-action="Index">
+                    <img src="~/imagens/LogoPedie.png" alt="Pediê" class="logo-navbar fotologo">
                 </a>
 
-                <div class="d-none d-lg-flex align-items-center">
-                    <a class="nav-link mx-2" asp-controller="Home" asp-action="Index">Início</a>
-                    <a class="nav-link mx-2" asp-controller="Home" asp-action="Promocoes">Promoções</a>
-                    <a class="nav-link mx-2 bi bi-cart3" asp-controller="Carrinho" asp-action="Index">Carrinho</a>
+                <div class="d-none d-lg-flex align-items-center flex-wrap gap-1">
+                    <a class="nav-link px-3 py-2 rounded-pill" asp-controller="Home" asp-action="Index">
+                        <i class="bi bi-house-door me-1"></i>Início
+                    </a>
+                    <a class="nav-link px-3 py-2 rounded-pill" asp-controller="Home" asp-action="Promocoes">
+                        <i class="bi bi-tags me-1"></i>Promoções
+                    </a>
+                    <a class="nav-link px-3 py-2 rounded-pill position-relative" asp-controller="Carrinho" asp-action="Index">
+                        <i class="bi bi-cart3 me-1"></i>Carrinho
+                        <span class="badge rounded-pill bg-danger contador-carrinho ms-1 @(qtdCarrinho == 0 ? "d-none" : "")">
+                            @qtdCarrinho
+                        </span>
+                    </a>
                     
                     @if (Context.Session.GetInt32("IdCliente") != null)
                     {
-                        <a class="nav-link mx-2" asp-controller="Pedido" asp-action="MeusPedidos">Meus Pedidos</a>
+                        <a class="nav-link px-3 py-2 rounded-pill" asp-controller="Pedido" asp-action="MeusPedidos">
+                            <i class="bi bi-bag me-1"></i>Meus Pedidos
+                        </a>
 
                         @if (Context.Session.GetString("Perfil") == "Admin")
                         {
-                            <a class="nav-link fw-bold text-danger mx-2 bi bi-gear" asp-controller="Pedido" asp-action="GerenciarPedidos"> Gestão de Pedidos</a>
-                            <a class="nav-link fw-bold text-danger mx-2 bi bi-gear" asp-controller="Produto" asp-action="Index"> Gestão de Produtos</a>
-                            <a class="nav-link fw-bold text-danger mx-2 bi bi-tags" asp-controller="Promocao" asp-action="Index"> Promoções</a>
-                            <li><a class="dropdown-item fw-bold text-danger bi bi-tags" asp-controller="Promocao" asp-action="Index"> Gestão de Promoções</a></li>
+                            <div class="d-flex align-items-center gap-1 ms-2 ps-2 border-start">
+                                <a class="nav-link nav-admin-pill px-3 py-2 rounded-pill fw-semibold text-danger" asp-controller="Pedido" asp-action="GerenciarPedidos">
+                                    <i class="bi bi-clipboard-check me-1"></i>Gestão de Pedidos
+                                </a>
+                                <a class="nav-link nav-admin-pill px-3 py-2 rounded-pill fw-semibold text-danger" asp-controller="Produto" asp-action="Index">
+                                    <i class="bi bi-box-seam me-1"></i>Gestão de Produtos
+                                </a>
+                                <a class="nav-link nav-admin-pill px-3 py-2 rounded-pill fw-semibold text-danger" asp-controller="Promocao" asp-action="Index">
+                                    <i class="bi bi-megaphone me-1"></i>Gestão de Promoções
+                                </a>
+                            </div>
                         }
 
-                        <div class="ms-4 border-start ps-4">
-                            <a class="btn btn-outline-danger bi bi-box-arrow-left" asp-controller="Cliente" asp-action="Sair"> Sair</a>
+                        <div class="ms-3 border-start ps-3 d-flex align-items-center gap-3">
+                            <span class="text-muted small text-nowrap">
+                                <i class="bi bi-person-circle me-1"></i>Olá, <strong>@Context.Session.GetString("NomeCliente")</strong>
+                            </span>
+                            <a class="btn btn-outline-danger btn-sm px-3" asp-controller="Cliente" asp-action="Sair">
+                                <i class="bi bi-box-arrow-left me-1"></i>Sair
+                            </a>
                         </div>
                     }
                     else
                     {
-                        <div class="ms-4 border-start ps-4">
-                            <a class="btn btn-primary" asp-controller="Cliente" asp-action="Login">Entrar / Criar Conta</a>
+                        <div class="ms-3 border-start ps-3">
+                            <a class="btn btn-primary px-4" asp-controller="Cliente" asp-action="Login" asp-route-returnUrl="@urlRetorno">
+                                <i class="bi bi-person me-1"></i>Entrar / Criar Conta
+                            </a>
                         </div>
                     }
                 </div>
@@ -62,62 +113,111 @@
         </nav>
     </header>
 
-    <nav class="navbar fixed-bottom bg-white border-top shadow-lg d-flex d-lg-none justify-content-around py-2" style="z-index: 1050;">
-        <a asp-controller="Home" asp-action="Index" class="text-decoration-none text-dark text-center">
-            <div class="fs-4 bi bi-house-door"></div>
+    <nav class="navbar fixed-bottom bg-white border-top shadow-lg d-flex d-lg-none justify-content-around py-2 px-1" style="z-index: 1050;">
+        <a asp-controller="Home" asp-action="Index" class="mobile-nav-item text-decoration-none text-dark text-center">
+            <div class="fs-5 bi bi-house-door"></div>
             <small>Início</small>
         </a>
-        <a asp-controller="Carrinho" asp-action="Index" class="text-decoration-none text-dark text-center">
-            <div class="fs-4 bi bi-cart3"></div>
-            <small>Carrinho</small>
+        <a asp-controller="Home" asp-action="Promocoes" class="mobile-nav-item text-decoration-none text-dark text-center">
+            <div class="fs-5 bi bi-tags"></div>
+            <small>Promoções</small>
+        </a>
+        <a asp-controller="Carrinho" asp-action="Index" class="mobile-nav-item text-decoration-none text-dark text-center position-relative">
+            <div class="fs-5 bi bi-cart3 position-relative d-inline-block">
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger contador-carrinho @(qtdCarrinho == 0 ? "d-none" : "")" style="font-size: 0.65rem;">
+                    @qtdCarrinho
+                </span>
+            </div>
+            <small class="d-block">Carrinho</small>
         </a>
         
         @if (Context.Session.GetInt32("IdCliente") != null)
         {
-            <a asp-controller="Pedido" asp-action="MeusPedidos" class="text-decoration-none text-dark text-center">
-                <div class="fs-4 bi bi-bag"></div>
+            <a asp-controller="Pedido" asp-action="MeusPedidos" class="mobile-nav-item text-decoration-none text-dark text-center">
+                <div class="fs-5 bi bi-bag"></div>
                 <small>Pedidos</small>
             </a>
             
             if (Context.Session.GetString("Perfil") == "Admin")
             {
-                <!-- MENU DROPUP DO ADMIN COM ÍCONES -->
-                <div class="dropup text-center">
-                    <a href="#" class="text-decoration-none text-danger fw-bold" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="fs-4 bi bi-gear"></div>
+                <!-- MENU DROPUP DO ADMIN ALINHADO À DIREITA (dropdown-menu-end) PARA NÃO CORTAR NA TELA -->
+                <div class="dropup text-center position-relative">
+                    <a href="#" class="mobile-nav-item text-decoration-none text-danger fw-bold d-inline-block" data-bs-toggle="dropdown" data-bs-display="static" aria-expanded="false">
+                        <div class="fs-5 bi bi-gear-fill"></div>
                         <small>Admin</small>
                     </a>
-                    <ul class="dropdown-menu mb-2 shadow border-danger">
-                        <li><a class="dropdown-item fw-bold text-danger bi bi-bag" asp-controller="Pedido" asp-action="GerenciarPedidos"> Gestão de Pedidos</a></li>
-                        <li><a class="dropdown-item fw-bold text-danger bi bi-gear" asp-controller="Produto" asp-action="Index"> Gestão de Produtos</a></li>
+                    <ul class="dropdown-menu dropdown-menu-end admin-dropup-menu mb-2 shadow-lg border-danger rounded-3">
+                        <li>
+                            <a class="dropdown-item fw-semibold text-danger py-2" asp-controller="Pedido" asp-action="GerenciarPedidos">
+                                <i class="bi bi-clipboard-check me-2"></i>Gestão de Pedidos
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item fw-semibold text-danger py-2" asp-controller="Produto" asp-action="Index">
+                                <i class="bi bi-box-seam me-2"></i>Gestão de Produtos
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item fw-semibold text-danger py-2" asp-controller="Promocao" asp-action="Index">
+                                <i class="bi bi-megaphone me-2"></i>Gestão de Promoções
+                            </a>
+                        </li>
                     </ul>
                 </div>
             }
 
-            <a asp-controller="Cliente" asp-action="Sair" class="text-decoration-none text-danger text-center">
-                <div class="fs-4 box-arrow-left bi bi-box-arrow-left"></div>
+            <a asp-controller="Cliente" asp-action="Sair" class="mobile-nav-item text-decoration-none text-danger text-center">
+                <div class="fs-5 bi bi-box-arrow-left"></div>
                 <small>Sair</small>
             </a>
         }
         else
         {
-            <a asp-controller="Cliente" asp-action="Login" class="text-decoration-none text-dark text-center">
-                <div class="fs-4 bi bi-person"></div>
+            <a asp-controller="Cliente" asp-action="Login" asp-route-returnUrl="@urlRetorno" class="mobile-nav-item text-decoration-none text-dark text-center">
+                <div class="fs-5 bi bi-person"></div>
                 <small>Entrar</small>
             </a>
         }
     </nav>
 
     <main class="container mt-4 pb-5">
+        @if (TempData["Mensagem"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show shadow-sm rounded-3" role="alert">
+                <i class="bi bi-check-circle-fill me-2"></i> @TempData["Mensagem"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        }
+        @if (TempData["Erro"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm rounded-3" role="alert">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["Erro"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+        }
+
         @RenderBody()
     </main>
 
-    <footer class="text-center mt-5 mb-4 d-none d-lg-block">
+    <!-- Toast de Notificação (ex: Item adicionado ao carrinho) -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1090; margin-bottom: 65px;">
+        <div id="toastCarrinho" class="toast align-items-center text-bg-success border-0 shadow-lg rounded-3" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center justify-content-between w-100 gap-2">
+                    <span><i class="bi bi-cart-check-fill me-2"></i><span id="toastCarrinhoTexto">Produto adicionado ao carrinho!</span></span>
+                    <a asp-controller="Carrinho" asp-action="Index" class="btn btn-sm btn-light fw-bold text-success text-nowrap">Ver Carrinho</a>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center mt-5 py-3 d-none d-lg-block">
         <div class="container">
-            <p class="text-muted mb-2" style="font-size: 0.85rem;">
+            <p class="text-light opacity-75 mb-1" style="font-size: 0.85rem;">
                 A Pediê valoriza a diversidade e não tolera qualquer forma de discriminação por raça, etnia, religião, gênero, orientação sexual ou condição social.
             </p>
-            <p class="corfooter fw-bold"><small>© 2026 - Douglas Heinrick de Souza Cunha - Thiago Elson Alves Matos</small></p>
+            <p class="corfooter fw-bold mb-0"><small>© 2026 - Douglas Heinrick de Souza Cunha - Thiago Elson Alves Matos</small></p>
         </div>
     </footer>
 
@@ -129,7 +229,11 @@
     <script>
     if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
+            if ("caches" in window) {
+                caches.delete("pedie-cache-v1");
+            }
             navigator.serviceWorker.register("/service-worker.js")
+                .then(reg => reg.update())
                 .catch(error => console.error(
                     "Falha ao registrar o service worker:",
                     error

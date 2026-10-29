@@ -16,7 +16,6 @@
             <input type="text" name="busca" class="form-control form-control-lg me-2" 
                    placeholder="Buscar por nome do doce..." value="@ViewBag.BuscaAtual" />
             
-            
             @if (ViewBag.CategoriaAtual != null)
             {
                 <input type="hidden" name="idCategoria" value="@ViewBag.CategoriaAtual" />
@@ -26,7 +25,6 @@
             <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary btn-lg ms-2">Limpar</a>
         </form>
 
-        
         <div class="d-flex flex-wrap gap-2 justify-content-center">
                        
             <a asp-controller="Home" asp-action="Index" 
@@ -73,14 +71,19 @@
                             <img src="@produto.ImagemUrl" alt="@produto.Nome" class="imagem-produto img-fluid rounded">
                         </div>
 
+                        @if (!string.IsNullOrEmpty(produto.Descricao))
+                        {
+                            <p class="text-muted small text-center mb-2">@produto.Descricao</p>
+                        }
+
                         <p class="preco text-center fs-5 fw-bold">
-                            R$ @produto.Preco
+                            R$ @produto.Preco.ToString("N2")
                         </p>
                         
-                        <form asp-controller="Carrinho" asp-action="Adicionar" method="post" class="mt-auto">
+                        <form asp-controller="Carrinho" asp-action="Adicionar" method="post" class="mt-auto form-adicionar-carrinho">
                             <input type="hidden" name="id" value="@produto.IdProduto" />
-                            <button type="submit" class="btn btn-primary w-100">
-                                Adicionar ao Carrinho
+                            <button type="submit" class="btn btn-primary w-100 btn-adicionar">
+                                <i class="bi bi-cart-plus me-1"></i> Adicionar ao Carrinho
                             </button>
                         </form>
 

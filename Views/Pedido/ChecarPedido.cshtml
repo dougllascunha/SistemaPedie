@@ -1,169 +1,197 @@
 @model pimFinal.Models.Cliente
-
 @{
     ViewData["Title"] = "Checar Pedido";
+    var endereco = ViewBag.Endereco as pimFinal.Models.Endereco;
+    var nomeExibicao = !string.IsNullOrWhiteSpace(Model.NomeSocial) ? $"{Model.NomeSocial} ({Model.Nome})" : Model.Nome;
 }
-<h1 class="tituloCarrinho">Checar Pedido</h1>
-<form asp-action="FinalizarCompra" method="post">
-                    <div class="card mt-3">
-                        <div class="card-body">
 
-                            <h3>Dados do Cliente</h3>
+<h1 class="tituloCarrinho mb-4">Checar Pedido</h1>
 
-                            <p>
-                                <strong>Nome:</strong>
-                                    @Model.Nome
-                            </p>
+<div id="alertaEnderecoIncompleto" class="alert alert-danger d-none shadow-sm" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <span id="textoAlertaEndereco">Por favor, preencha todos os campos obrigatórios do endereço de entrega antes de finalizar a compra.</span>
+</div>
 
-                            <p>
-                                <strong>Email:</strong>
-                                    @Model.Email
-                            </p>
-                            <p>
-                                <strong>Telefone:</strong>     
-                                    @Model.Telefone
-                            </p>
-                        </div>
+<form asp-action="FinalizarCompra" method="post" id="formChecarPedido">
+    <div class="card mt-3 shadow-sm">
+        <div class="card-body">
+            <h3>Dados do Cliente</h3>
+            <p class="mb-1">
+                <strong>Nome:</strong> @nomeExibicao
+            </p>
+            <p class="mb-1">
+                <strong>Email:</strong> @Model.Email
+            </p>
+            <p class="mb-0">
+                <strong>Telefone:</strong> @(string.IsNullOrWhiteSpace(Model.Telefone) ? "Não informado" : Model.Telefone)
+            </p>
+        </div>
+    </div>
+
+    <div class="card mt-3 shadow-sm">
+        <div class="card-body">
+            <h3>Forma de Entrega</h3>
+
+            <div class="form-check mb-2">
+                <input class="form-check-input"
+                       type="radio"
+                       name="entrega"
+                       id="opcaoEntrega"
+                       value="Entrega"
+                       checked>
+                <label class="form-check-label fw-bold" for="opcaoEntrega">
+                    Entrega em Domicílio (Frete: R$ 10,00)
+                </label>
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input"
+                       type="radio"
+                       name="entrega"
+                       id="opcaoRetirada"
+                       value="Retirada">
+                <label class="form-check-label fw-bold" for="opcaoRetirada">
+                    Retirar na Loja (Frete Grátis)
+                </label>
+            </div>
+
+            <div id="dadosEndereco" class="border-top pt-3 mt-2">
+                <h4 class="mb-3">Endereço de Entrega <small class="text-muted fs-6">(* campos obrigatórios)</small></h4>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="cep" class="form-label">CEP *</label>
+                        <input id="cep" name="cep" class="form-control campo-endereco-obrigatorio"
+                               placeholder="00000-000" maxlength="9"
+                               value="@endereco?.Cep" required />
+                        <div class="form-text">Digite o CEP para preencher o endereço automaticamente.</div>
                     </div>
 
-                <div class="card mt-3">
-                    <div class="card-body">
-
-                        <h3>Forma de Entrega</h3>
-
-                        <div class="form-check">
-                            <input class="form-check-input"
-                                type="radio"
-                                name="entrega"
-                                id="opcaoEntrega"
-                                value="Entrega"
-                                checked>
-
-                            <label class="form-check-label" for="opcaoEntrega">
-                                Entrega
-                            </label>
-                        </div>
-                        <div id="dadosEndereco">
-                            <h3 class="mt-4">Endereço de Entrega</h3>
-
-                                <div class="mb-3">
-                                    <label>CEP</label>
-                                    <input id="cep"           name="cep" class="form-control" />
-                                </div>
-
-                                <div  class="mb-3">
-                                    <label>Rua</label>
-                                    <input id="rua"           name="rua"class="form-control" /> 
-                                </div>
-                                <div  class="mb-3">
-                                    <label>Bairro</label>
-                                    <input id="bairro"        name="bairro"class="form-control" />
-                                </div>
-
-                                <div  class="mb-3">
-                                    <label>Cidade</label>
-                                    <input id="cidade"       name="cidade"class="form-control" />
-                                </div>
-
-                                <div  class="mb-3">
-                                    <label>Estado</label>
-                                    <input id="estado"       name="estado" class="form-control" />
-                                </div>
-
-                                <div class="mb-3">
-                                    <label>Número</label>
-                                    <input id="numero"      name="numero" class="form-control" />
-                                </div>
-
-                                <div class="mb-3">
-                                    <label>Complemento</label>
-                                    <input id="complemento" name="complemento" class="form-control" />
-                                </div>
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input"
-                                type="radio"
-                                name="entrega"
-                                id="opcaoRetirada"
-                                value="Retirada">
-
-                            <label class="form-check-label" for="opcaoRetirada">
-                                Retirar na Loja
-                            </label>
-                        </div>
-
+                    <div class="col-md-8 mb-3">
+                        <label for="rua" class="form-label">Rua / Logradouro *</label>
+                        <input id="rua" name="rua" class="form-control campo-endereco-obrigatorio"
+                               placeholder="Nome da rua ou avenida"
+                               value="@endereco?.Rua" required />
                     </div>
                 </div>
 
-                <div class="card mt-3">
-                    <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="numero" class="form-label">Número *</label>
+                        <input id="numero" name="numero" class="form-control campo-endereco-obrigatorio"
+                               placeholder="Ex: 123"
+                               value="@endereco?.Numero" required />
+                    </div>
 
-                        <h3>Forma de Pagamento</h3>
-
-                        <div class="form-check">
-                            <input class="form-check-input"
-                                type="radio"
-                                name="pagamento"
-                                checked>
-
-                            PIX
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input"
-                                type="radio"
-                                name="pagamento">
-
-                            Cartão de Crédito
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input"
-                                type="radio"
-                                name="pagamento">
-
-                            Cartão de Débito
-                        </div>
-
-                        <div class="form-check">
-                            <input class="form-check-input"
-                                type="radio"
-                                name="pagamento">
-
-                            Dinheiro
-                        </div>
-
+                    <div class="col-md-8 mb-3">
+                        <label for="complemento" class="form-label">Complemento (Opcional)</label>
+                        <input id="complemento" name="complemento" class="form-control"
+                               placeholder="Apto, bloco, referência..."
+                               value="@endereco?.Complemento" />
                     </div>
                 </div>
-                <div class="card mt-3">
-                    <div class="card-body">
 
-                        <h3>Resumo da Compra</h3>
+                <div class="row">
+                    <div class="col-md-5 mb-3">
+                        <label for="bairro" class="form-label">Bairro *</label>
+                        <input id="bairro" name="bairro" class="form-control campo-endereco-obrigatorio"
+                               placeholder="Seu bairro"
+                               value="@endereco?.Bairro" required />
+                    </div>
 
-                        <p>
-                            Subtotal:
-                            R$ @ViewBag.Subtotal.ToString("N2")
-                        </p>
+                    <div class="col-md-5 mb-3">
+                        <label for="cidade" class="form-label">Cidade *</label>
+                        <input id="cidade" name="cidade" class="form-control campo-endereco-obrigatorio"
+                               placeholder="Sua cidade"
+                               value="@endereco?.Cidade" required />
+                    </div>
 
-                        <p>
-                            Frete:
-                            R$ @ViewBag.Frete.ToString("N2")
-                        </p>
-
-                        <hr />
-
-                        <h4>
-                            Total Final:
-                            R$ @ViewBag.TotalFinal.ToString("N2")
-                        </h4>
-
+                    <div class="col-md-2 mb-3">
+                        <label for="estado" class="form-label">UF *</label>
+                        <input id="estado" name="estado" class="form-control campo-endereco-obrigatorio"
+                               placeholder="SP" maxlength="2"
+                               value="@endereco?.Uf" required />
                     </div>
                 </div>
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success btn-lg">
-                        Finalizar Compra
-                    </button>
-                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="card mt-3 shadow-sm">
+        <div class="card-body">
+            <h3>Forma de Pagamento</h3>
+
+            <div class="form-check mb-2">
+                <input class="form-check-input"
+                       type="radio"
+                       name="pagamento"
+                       id="pagPix"
+                       value="PIX"
+                       checked>
+                <label class="form-check-label" for="pagPix">PIX (Aprovação Imediata)</label>
+            </div>
+
+            <div class="form-check mb-2">
+                <input class="form-check-input"
+                       type="radio"
+                       name="pagamento"
+                       id="pagCredito"
+                       value="CartaoCredito">
+                <label class="form-check-label" for="pagCredito">Cartão de Crédito</label>
+            </div>
+
+            <div class="form-check mb-2">
+                <input class="form-check-input"
+                       type="radio"
+                       name="pagamento"
+                       id="pagDebito"
+                       value="CartaoDebito">
+                <label class="form-check-label" for="pagDebito">Cartão de Débito</label>
+            </div>
+
+            <div class="form-check">
+                <input class="form-check-input"
+                       type="radio"
+                       name="pagamento"
+                       id="pagDinheiro"
+                       value="Dinheiro">
+                <label class="form-check-label" for="pagDinheiro">Dinheiro</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mt-3 shadow-sm"
+         id="resumoCompraCard"
+         data-subtotal="@(((decimal)ViewBag.Subtotal).ToString(System.Globalization.CultureInfo.InvariantCulture))"
+         data-frete="@(((decimal)ViewBag.Frete).ToString(System.Globalization.CultureInfo.InvariantCulture))">
+        <div class="card-body">
+            <h3>Resumo da Compra</h3>
+
+            <p class="mb-1">
+                Subtotal:
+                <strong>R$ @ViewBag.Subtotal.ToString("N2")</strong>
+            </p>
+
+            <p class="mb-2">
+                Frete:
+                <strong id="valorFreteTexto">R$ @ViewBag.Frete.ToString("N2")</strong>
+            </p>
+
+            <hr />
+
+            <h4 class="mb-0">
+                Total Final:
+                <span class="text-success fw-bold" id="valorTotalFinalTexto">R$ @ViewBag.TotalFinal.ToString("N2")</span>
+            </h4>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <a asp-controller="Carrinho" asp-action="Index" class="btn btn-outline-secondary btn-lg">
+            <i class="bi bi-arrow-left me-1"></i> Voltar ao Carrinho
+        </a>
+        <button type="submit" class="btn btn-success btn-lg fw-bold">
+            Ir para o Pagamento <i class="bi bi-check2-circle ms-1"></i>
+        </button>
+    </div>
 </form>
