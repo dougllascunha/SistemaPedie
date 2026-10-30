@@ -50,32 +50,32 @@
 
                                 @if (pedido.IdSituacao == 1 || pedido.IdSituacao == 2)
                                 {
-                                    <div class="text-muted mt-1 fw-semibold" style="font-size: 0.85rem;">
-                                        ⏳ Previsão: 1h a 3h30 min
+                                    <div class="text-muted mt-1 fw-semibold bi bi-hourglass-split" style="font-size: 0.85rem;">
+                                         Previsão: 1h a 3h30 min
                                     </div>
                                 }
                                 else if (pedido.IdSituacao == 5)
                                 {
-                                    <div class="text-primary mt-1 fw-semibold" style="font-size: 0.85rem;">
-                                        🛵 Seu pedido saiu para entrega!
+                                    <div class="text-primary mt-1 fw-semibold bi bi-scooter" style="font-size: 0.85rem;">
+                                         Seu pedido saiu para entrega!
                                     </div>
                                 }
                                 else if (pedido.IdSituacao == 3)
                                 {
-                                    <div class="text-primary mt-1 fw-semibold" style="font-size: 0.85rem;">
-                                        🏪 Pronto! Disponível para retirada na loja.
+                                    <div class="text-primary mt-1 fw-semibold bi bi-shop" style="font-size: 0.85rem;">
+                                         Pronto! Disponível para retirada na loja.
                                     </div>
                                 }
                                 else if (pedido.IdSituacao == 4)
                                 {
-                                    <div class="text-success mt-1 fw-semibold" style="font-size: 0.85rem;">
-                                        ✅ Pedido entregue
+                                    <div class="text-success mt-1 fw-semibold bi bi-check-circle-fill" style="font-size: 0.85rem;">
+                                         Pedido entregue
                                     </div>
                                 }
                                 else if (pedido.IdSituacao == 6)
                                 {
-                                    <div class="text-danger mt-1 fw-semibold" style="font-size: 0.85rem;">
-                                        ❌ Pedido cancelado
+                                    <div class="text-danger mt-1 fw-semibold bi bi-x-circle-fill" style="font-size: 0.85rem;">
+                                         Pedido cancelado
                                     </div>
                                 }
                             </td>
