@@ -4,10 +4,16 @@
     ViewData["Title"] = "Gestão de Pedidos (Admin)";
 }
 
-<div class="container mt-4">
+<div class="container mt-4" id="containerGerenciarPedidos">
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
         <h2 class="text-danger fw-bold mb-0"><i class="bi bi-gear-fill me-2"></i>Painel de Controle de Pedidos</h2>
-        <span class="badge bg-secondary fs-6">@Model.Count() pedido(s)</span>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+            <div class="d-flex align-items-center gap-2 small text-muted bg-white px-3 py-1 rounded-pill shadow-sm border">
+                <span id="indicadorSyncAdmin" class="d-inline-block rounded-circle bg-success" style="width: 9px; height: 9px;"></span>
+                <span id="textoSyncAdmin">Sincronização ativa</span>
+            </div>
+            <span class="badge bg-secondary fs-6" id="contadorTotalPedidosAdmin">@Model.Count() pedido(s)</span>
+        </div>
     </div>
 
     @if (!Model.Any())
@@ -28,7 +34,7 @@
                         <th style="min-width: 320px;">Alterar Status e Ações</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tabelaGerenciarPedidosBody">
                     @foreach (var pedido in Model)
                     {
                         var badgeClass = pedido.IdSituacao switch
@@ -42,7 +48,7 @@
                             _ => "bg-secondary"
                         };
 
-                        <tr>
+                        <tr data-pedido-id="@pedido.IdPedido" data-situacao-id="@pedido.IdSituacao">
                             <td class="fw-bold">#@pedido.IdPedido</td>
                             <td>
                                 <div class="fw-semibold">@(pedido.Cliente?.Nome ?? "Cliente")</div>
@@ -54,15 +60,15 @@
                             <td class="text-nowrap">@pedido.DataPedido.ToString("dd/MM/yyyy HH:mm")</td>
                             <td class="text-success fw-bold text-nowrap">R$ @pedido.valorTotal.ToString("N2")</td>
                             <td>
-                                <span class="badge @badgeClass px-3 py-2">
+                                <span class="badge @badgeClass px-3 py-2 badge-status-admin">
                                     @(pedido.Situacao?.Descricao ?? "Indefinido")
                                 </span>
                             </td>
                             <td>
-                                <form asp-controller="Pedido" asp-action="AtualizarStatus" method="post" class="d-flex align-items-center gap-2 flex-nowrap">
+                                <form asp-controller="Pedido" asp-action="AtualizarStatus" method="post" class="d-flex align-items-center gap-2 flex-nowrap form-atualizar-status-pedido">
                                     <input type="hidden" name="idPedido" value="@pedido.IdPedido" />
 
-                                    <select name="idSituacao" class="form-select form-select-sm" style="min-width: 230px;">
+                                    <select name="idSituacao" class="form-select form-select-sm select-status-pedido" style="min-width: 230px;">
                                         @foreach (var sit in ViewBag.Situacoes)
                                         {
                                             if (sit.IdSituacao == pedido.IdSituacao)
@@ -76,7 +82,7 @@
                                         }
                                     </select>
 
-                                    <button type="submit" class="btn btn-sm btn-primary text-nowrap px-3">
+                                    <button type="submit" class="btn btn-sm btn-primary text-nowrap px-3 btn-salvar-status">
                                         <i class="bi bi-check2 me-1"></i>Salvar
                                     </button>
                                 </form>

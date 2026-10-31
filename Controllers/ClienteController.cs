@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using pimFinal.Data;
 using pimFinal.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 
 namespace pimFinal.Controllers
@@ -15,6 +18,14 @@ namespace pimFinal.Controllers
         public ClienteController(PedieDbContext context)
         {
             _context = context;
+        }
+
+        // Gera o mesmo Hash SHA-256 hexadecimal (64 caracteres) que o CONVERT(VARCHAR(64), HASHBYTES('SHA2_256', ...), 2) do T-SQL
+        private static string GerarHashSha256(string senha)
+        {
+            if (string.IsNullOrEmpty(senha)) return string.Empty;
+            byte[] bytes = SHA256.HashData(Encoding.UTF8.GetBytes(senha));
+            return Convert.ToHexString(bytes); // Retorna em maiúsculas (padrão style 2 do T-SQL CONVERT)
         }
 
         private bool CarrinhoTemItens()
@@ -49,8 +60,25 @@ namespace pimFinal.Controllers
                 cliente.Perfil = "Cliente";
                 cliente.DataCadastro = DateTime.Now;
 
-                _context.Clientes.Add(cliente);
-                _context.SaveChanges();
+                try
+                {
+                    // Executa a Stored Procedure no SQL Azure (que converte a senha para SHA-256 via HASHBYTES)
+                    _context.Database.ExecuteSqlInterpolated($@"
+                        EXEC [dbo].[sp_CadastrarCliente] 
+                            @nome = {cliente.Nome}, 
+                            @nomeSocial = {cliente.NomeSocial}, 
+                            @email = {cliente.Email}, 
+                            @telefone = {cliente.Telefone}, 
+                            @senhaAcesso = {cliente.SenhaAcesso}, 
+                            @perfil = {cliente.Perfil}");
+                }
+                catch
+                {
+                    // Fallback seguro caso a procedure ainda não tenha sido rodada no banco: aplica SHA-256 idêntico ao T-SQL
+                    cliente.SenhaAcesso = GerarHashSha256(cliente.SenhaAcesso);
+                    _context.Clientes.Add(cliente);
+                    _context.SaveChanges();
+                }
 
                 TempData["Mensagem"] = "Conta criada com sucesso! Faça seu login para continuar.";
                 return RedirectToAction("Login", new { returnUrl });
@@ -69,11 +97,32 @@ namespace pimFinal.Controllers
         [HttpPost]
         public IActionResult Login(string email, string senhaAcesso, string? returnUrl)
         {
+            string senhaHash = GerarHashSha256(senhaAcesso ?? string.Empty);
+
+            // Busca o cliente pelo e-mail e valida o hash SHA-256 (mantendo compatibilidade automática caso exista senha antiga em texto puro)
             var cliente = _context.Clientes
-                .FirstOrDefault(c => c.Email == email && c.SenhaAcesso == senhaAcesso);
+                .FirstOrDefault(c => c.Email == email &&
+                    (c.SenhaAcesso == senhaHash || c.SenhaAcesso == senhaAcesso));
 
             if (cliente != null)
             {
+                // Se a conta antiga ainda estava em texto puro no banco, converte imediatamente para SHA-256 via Procedure/Hash
+                if (cliente.SenhaAcesso != senhaHash)
+                {
+                    try
+                    {
+                        _context.Database.ExecuteSqlInterpolated($@"
+                            EXEC [dbo].[sp_RedefinirSenhaCliente] 
+                                @idCliente = {cliente.IdCliente}, 
+                                @novaSenha = {senhaAcesso}");
+                    }
+                    catch
+                    {
+                        cliente.SenhaAcesso = senhaHash;
+                        _context.SaveChanges();
+                    }
+                }
+
                 string nomeExibicao = !string.IsNullOrWhiteSpace(cliente.NomeSocial) ? cliente.NomeSocial : cliente.Nome;
 
                 HttpContext.Session.SetInt32("IdCliente", cliente.IdCliente);
@@ -82,8 +131,6 @@ namespace pimFinal.Controllers
 
                 TempData["Mensagem"] = $"Bem-vindo(a) de volta, {nomeExibicao}!";
 
-                // Se houver itens no carrinho e o returnUrl for vazio ou apontar para a Home,
-                // redireciona o cliente diretamente de volta para o Carrinho para concluir a compra.
                 if (CarrinhoTemItens() &&
                     (string.IsNullOrEmpty(returnUrl) ||
                      returnUrl == "/" ||
@@ -107,7 +154,7 @@ namespace pimFinal.Controllers
 
         public IActionResult Sair()
         {
-            HttpContext.Session.Clear(); // Apaga todos os dados da sessão do usuário logado
+            HttpContext.Session.Clear();
             TempData["Mensagem"] = "Você saiu da sua conta.";
             return Redirect("/?logout=1");
         }
@@ -159,8 +206,19 @@ namespace pimFinal.Controllers
 
                 if (cliente != null && !string.IsNullOrWhiteSpace(novaSenha))
                 {
-                    cliente.SenhaAcesso = novaSenha;
-                    _context.SaveChanges();
+                    try
+                    {
+                        // Executa a Stored Procedure que converte a nova senha para SHA-256 no banco
+                        _context.Database.ExecuteSqlInterpolated($@"
+                            EXEC [dbo].[sp_RedefinirSenhaCliente] 
+                                @idCliente = {idCliente}, 
+                                @novaSenha = {novaSenha}");
+                    }
+                    catch
+                    {
+                        cliente.SenhaAcesso = GerarHashSha256(novaSenha);
+                        _context.SaveChanges();
+                    }
 
                     TempData["Mensagem"] = "Senha redefinida com sucesso! Faça seu login.";
                     return RedirectToAction("Login", new { returnUrl });

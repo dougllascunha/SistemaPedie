@@ -48,7 +48,7 @@
 </div>
 
 <!-- SESSÃO DE PRODUTOS -->
-<div class="row">
+<div class="row" id="catalogoProdutosContainer">
     @if (!Model.Any())
     {
         <div class="col-12 text-center my-5">
@@ -59,7 +59,7 @@
     {
         @foreach (var produto in Model)
         {
-            <div class="col-6 col-md-4 mb-4">
+            <div class="col-6 col-md-4 mb-4 coluna-produto-catalogo" data-produto-card="@produto.IdProduto">
                 <div class="card h-100 shadow-sm">
                     <div class="card-body d-flex flex-column">
 
@@ -73,10 +73,10 @@
 
                         @if (!string.IsNullOrEmpty(produto.Descricao))
                         {
-                            <p class="text-muted small text-center mb-2">@produto.Descricao</p>
+                            <p class="text-muted small text-center mb-2 descricao-produto-card">@produto.Descricao</p>
                         }
 
-                        <p class="preco text-center fs-5 fw-bold">
+                        <p class="preco text-center fs-5 fw-bold preco-produto-card">
                             R$ @produto.Preco.ToString("N2")
                         </p>
                         

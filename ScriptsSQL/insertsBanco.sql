@@ -2,7 +2,7 @@ USE [dbpedie];
 GO
 
 -- =========================================================================
--- 1. CRIAÇÃO DAS TABELAS (Caso ainda não tenham sido criadas no dbpedie)
+-- 1. CRIAÇÃO DAS TABELAS E PROCEDURES (Caso ainda não existam no dbpedie)
 -- =========================================================================
 
 IF OBJECT_ID('dbo.Categoria', 'U') IS NULL
@@ -124,6 +124,48 @@ BEGIN
 END
 GO
 
+-- Stored Procedures de Criptografia de Senha em SHA-256
+CREATE OR ALTER PROCEDURE [dbo].[sp_CadastrarCliente]
+    @nome VARCHAR(150),
+    @nomeSocial VARCHAR(150) = NULL,
+    @email VARCHAR(150),
+    @telefone VARCHAR(15) = NULL,
+    @senhaAcesso VARCHAR(255),
+    @perfil VARCHAR(20) = 'Cliente'
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    IF EXISTS (SELECT 1 FROM [dbo].[Cliente] WHERE [email] = @email)
+    BEGIN
+        RAISERROR('Este e-mail já está cadastrado no sistema.', 16, 1);
+        RETURN;
+    END
+
+    DECLARE @senhaHash VARCHAR(64);
+    SET @senhaHash = CONVERT(VARCHAR(64), HASHBYTES('SHA2_256', CONVERT(VARCHAR(255), @senhaAcesso)), 2);
+
+    INSERT INTO [dbo].[Cliente] ([nome], [nomeSocial], [email], [telefone], [senhaAcesso], [perfil], [dataCadastro])
+    VALUES (@nome, @nomeSocial, @email, @telefone, @senhaHash, @perfil, GETDATE());
+END
+GO
+
+CREATE OR ALTER PROCEDURE [dbo].[sp_RedefinirSenhaCliente]
+    @idCliente INT,
+    @novaSenha VARCHAR(255)
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DECLARE @senhaHash VARCHAR(64);
+    SET @senhaHash = CONVERT(VARCHAR(64), HASHBYTES('SHA2_256', CONVERT(VARCHAR(255), @novaSenha)), 2);
+
+    UPDATE [dbo].[Cliente]
+    SET [senhaAcesso] = @senhaHash
+    WHERE [idCliente] = @idCliente;
+END
+GO
+
 -- =========================================================================
 -- 2. INSERÇÃO DOS DADOS INICIAIS (INSERT INTO)
 -- =========================================================================
@@ -195,12 +237,31 @@ BEGIN
 END
 GO
 
--- Clientes (Admin e Cliente de teste)
+-- Clientes (Admin e Cliente de teste com senha '123456' convertida em SHA-256 pela Procedure)
 IF NOT EXISTS (SELECT 1 FROM Cliente)
 BEGIN
-    INSERT INTO Cliente (nome, nomeSocial, email, telefone, senhaAcesso, perfil, dataCadastro) VALUES
-    ('Administrador Pediê', 'Admin Pediê', 'admin@pedie.com', '(11) 99999-9999', '123456', 'Admin', GETDATE()),
-    ('Cliente Teste', 'Cliente', 'cliente@pedie.com', '(11) 98888-8888', '123456', 'Cliente', GETDATE());
+    EXEC [dbo].[sp_CadastrarCliente]
+        @nome = 'Administrador Pediê',
+        @nomeSocial = 'Admin Pediê',
+        @email = 'admin@pedie.com',
+        @telefone = '(11) 99999-9999',
+        @senhaAcesso = '123456',
+        @perfil = 'Admin';
+
+    EXEC [dbo].[sp_CadastrarCliente]
+        @nome = 'Cliente Teste',
+        @nomeSocial = 'Cliente',
+        @email = 'cliente@pedie.com',
+        @telefone = '(11) 98888-8888',
+        @senhaAcesso = '123456',
+        @perfil = 'Cliente';
+END
+ELSE
+BEGIN
+    -- Converte automaticamente qualquer senha antiga em texto puro para SHA-256
+    UPDATE [dbo].[Cliente]
+    SET [senhaAcesso] = CONVERT(VARCHAR(64), HASHBYTES('SHA2_256', CONVERT(VARCHAR(255), [senhaAcesso])), 2)
+    WHERE LEN([senhaAcesso]) <> 64;
 END
 GO
 

@@ -278,12 +278,98 @@ public class PedidoController : Controller
             return RedirectToAction("Index", "Home");
 
         var pedido = _context.Pedidos.FirstOrDefault(p => p.IdPedido == idPedido);
+        string novaDescricao = "Indefinido";
+
         if (pedido != null)
         {
             pedido.IdSituacao = idSituacao;
             _context.SaveChanges();
-            TempData["Mensagem"] = $"Status do pedido #{idPedido} atualizado com sucesso!";
+
+            var situacao = _context.Situacoes.FirstOrDefault(s => s.IdSituacao == idSituacao);
+            novaDescricao = situacao?.Descricao ?? "Atualizado";
+            TempData["Mensagem"] = $"Status do pedido #{idPedido} atualizado para '{novaDescricao}' com sucesso!";
         }
+
+        if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
+            Request.Headers["Accept"].ToString().Contains("application/json"))
+        {
+            return Json(new
+            {
+                sucesso = pedido != null,
+                idPedido,
+                idSituacao,
+                descricao = novaDescricao,
+                mensagem = $"Status do pedido #{idPedido} atualizado para '{novaDescricao}'!"
+            });
+        }
+
         return RedirectToAction("GerenciarPedidos");
+    }
+
+    // --- ENDPOINTS DE SINCRONIZAÇÃO EM TEMPO REAL (MOBILE / PWA / WEB) ---
+    [HttpGet]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult SincronizarMeusPedidos()
+    {
+        var idCliente = HttpContext.Session.GetInt32("IdCliente");
+        if (idCliente == null)
+        {
+            return Json(new { autenticado = false, pedidos = Array.Empty<object>() });
+        }
+
+        var pedidos = _context.Pedidos
+            .AsNoTracking()
+            .Include(p => p.Situacao)
+            .Where(p => p.IdCliente == idCliente.Value)
+            .OrderByDescending(p => p.DataPedido)
+            .Select(p => new
+            {
+                idPedido = p.IdPedido,
+                idSituacao = p.IdSituacao,
+                descricaoSituacao = p.Situacao != null ? p.Situacao.Descricao : "Em processamento",
+                dataPedido = p.DataPedido.ToString("dd/MM/yyyy HH:mm"),
+                valorTotal = p.valorTotal.ToString("N2")
+            })
+            .ToList();
+
+        return Json(new
+        {
+            autenticado = true,
+            timestamp = DateTime.Now.ToString("HH:mm:ss"),
+            pedidos
+        });
+    }
+
+    [HttpGet]
+    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    public IActionResult SincronizarPainelAdmin()
+    {
+        if (HttpContext.Session.GetString("Perfil") != "Admin")
+        {
+            return Unauthorized();
+        }
+
+        var pedidos = _context.Pedidos
+            .AsNoTracking()
+            .Include(p => p.Situacao)
+            .Include(p => p.Cliente)
+            .OrderByDescending(p => p.DataPedido)
+            .Select(p => new
+            {
+                idPedido = p.IdPedido,
+                idSituacao = p.IdSituacao,
+                descricaoSituacao = p.Situacao != null ? p.Situacao.Descricao : "Indefinido",
+                clienteNome = p.Cliente != null ? p.Cliente.Nome : "Cliente",
+                dataPedido = p.DataPedido.ToString("dd/MM/yyyy HH:mm"),
+                valorTotal = p.valorTotal.ToString("N2")
+            })
+            .ToList();
+
+        return Json(new
+        {
+            totalPedidos = pedidos.Count,
+            timestamp = DateTime.Now.ToString("HH:mm:ss"),
+            pedidos
+        });
     }
 }

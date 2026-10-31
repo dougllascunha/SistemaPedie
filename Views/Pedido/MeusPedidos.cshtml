@@ -4,8 +4,14 @@
     ViewData["Title"] = "Meus Pedidos";
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4 fw-bold"><i class="bi bi-bag-check me-2 text-primary"></i>Meus Pedidos</h2>
+<div class="container mt-4" id="containerMeusPedidos">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+        <h2 class="mb-0 fw-bold"><i class="bi bi-bag-check me-2 text-primary"></i>Meus Pedidos</h2>
+        <div class="d-flex align-items-center gap-2 small text-muted bg-white px-3 py-1 rounded-pill shadow-sm border">
+            <span id="indicadorSyncCliente" class=" d-inline-block rounded-circle bg-success" style="width: 9px; height: 9px;" title="Sincronização automática ativa"></span>
+            <span id="textoSyncCliente">Sincronização automática ativa</span>
+        </div>
+    </div>
 
     @if (!Model.Any())
     {
@@ -26,7 +32,7 @@
                         <th>Total</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tabelaMeusPedidosBody">
                     @foreach (var pedido in Model)
                     {
                         var badgeClass = pedido.IdSituacao switch
@@ -40,46 +46,48 @@
                             _ => "bg-secondary"
                         };
 
-                        <tr>
+                        <tr data-pedido-id="@pedido.IdPedido" data-situacao-id="@pedido.IdSituacao">
                             <td class="fw-bold">#@pedido.IdPedido</td>
                             <td>@pedido.DataPedido.ToString("dd/MM/yyyy HH:mm")</td>
                             <td>
-                                <span class="badge @badgeClass px-3 py-2">
+                                <span class="badge @badgeClass px-3 py-2 badge-status-pedido">
                                     @(pedido.Situacao?.Descricao ?? "Em processamento")
                                 </span>
 
-                                @if (pedido.IdSituacao == 1 || pedido.IdSituacao == 2)
-                                {
-                                    <div class="text-muted mt-1 fw-semibold" style="font-size: 0.85rem;">
-                                        ⏳ Previsão: 1h a 3h30 min
-                                    </div>
-                                }
-                                else if (pedido.IdSituacao == 5)
-                                {
-                                    <div class="text-primary mt-1 fw-semibold" style="font-size: 0.85rem;">
-                                        🛵 Seu pedido saiu para entrega!
-                                    </div>
-                                }
-                                else if (pedido.IdSituacao == 3)
-                                {
-                                    <div class="text-primary mt-1 fw-semibold" style="font-size: 0.85rem;">
-                                        🏪 Pronto! Disponível para retirada na loja.
-                                    </div>
-                                }
-                                else if (pedido.IdSituacao == 4)
-                                {
-                                    <div class="text-success mt-1 fw-semibold" style="font-size: 0.85rem;">
-                                        ✅ Pedido entregue
-                                    </div>
-                                }
-                                else if (pedido.IdSituacao == 6)
-                                {
-                                    <div class="text-danger mt-1 fw-semibold" style="font-size: 0.85rem;">
-                                        ❌ Pedido cancelado
-                                    </div>
-                                }
+                                <div class="detalhe-status-pedido">
+                                    @if (pedido.IdSituacao == 1 || pedido.IdSituacao == 2)
+                                    {
+                                        <div class="text-muted mt-1 fw-semibold" style="font-size: 0.85rem;">
+                                            ⏳ Previsão: 1h a 3h30 min
+                                        </div>
+                                    }
+                                    else if (pedido.IdSituacao == 5)
+                                    {
+                                        <div class="text-primary mt-1 fw-semibold" style="font-size: 0.85rem;">
+                                            🛵 Seu pedido saiu para entrega!
+                                        </div>
+                                    }
+                                    else if (pedido.IdSituacao == 3)
+                                    {
+                                        <div class="text-primary mt-1 fw-semibold" style="font-size: 0.85rem;">
+                                            🏪 Pronto! Disponível para retirada na loja.
+                                        </div>
+                                    }
+                                    else if (pedido.IdSituacao == 4)
+                                    {
+                                        <div class="text-success mt-1 fw-semibold" style="font-size: 0.85rem;">
+                                            ✅ Pedido entregue
+                                        </div>
+                                    }
+                                    else if (pedido.IdSituacao == 6)
+                                    {
+                                        <div class="text-danger mt-1 fw-semibold" style="font-size: 0.85rem;">
+                                            ❌ Pedido cancelado
+                                        </div>
+                                    }
+                                </div>
                             </td>
-                            <td class="text-success fw-bold">R$ @pedido.valorTotal.ToString("N2")</td>
+                            <td class="text-success fw-bold valor-total-pedido">R$ @pedido.valorTotal.ToString("N2")</td>
                         </tr>
                     }
                 </tbody>
