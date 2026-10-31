@@ -261,15 +261,15 @@ document.addEventListener("DOMContentLoaded", function () {
         switch (Number(idSituacao)) {
             case 1:
             case 2:
-                return '<div class="text-muted mt-1 fw-semibold" style="font-size: 0.85rem;">⏳ Previsão: 1h a 3h30 min</div>';
+                return '<div class="text-muted mt-1 fw-semibold bi bi-hourglass-split" style="font-size: 0.85rem;"> Previsão: 1h a 3h30 min</div>';
             case 5:
-                return '<div class="text-primary mt-1 fw-semibold" style="font-size: 0.85rem;">🛵 Seu pedido saiu para entrega!</div>';
+                return '<div class="text-primary mt-1 fw-semibold bi bi-scooter" style="font-size: 0.85rem;"> Seu pedido saiu para entrega!</div>';
             case 3:
-                return '<div class="text-primary mt-1 fw-semibold" style="font-size: 0.85rem;">🏪 Pronto! Disponível para retirada na loja.</div>';
+                return '<div class="text-primary mt-1 fw-semibold bi bi-shop" style="font-size: 0.85rem;"> Pronto! Disponível para retirada na loja.</div>';
             case 4:
-                return '<div class="text-success mt-1 fw-semibold" style="font-size: 0.85rem;">✅ Pedido entregue</div>';
+                return '<div class="text-success mt-1 fw-semibold bi bi-check-circle-fill" style="font-size: 0.85rem;"> Pedido entregue</div>';
             case 6:
-                return '<div class="text-danger mt-1 fw-semibold" style="font-size: 0.85rem;">❌ Pedido cancelado</div>';
+                return '<div class="text-danger mt-1 fw-semibold bi bi-x-circle-fill" style="font-size: 0.85rem;"> Pedido cancelado</div>';
             default:
                 return "";
         }
