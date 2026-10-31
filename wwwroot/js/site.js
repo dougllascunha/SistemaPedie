@@ -261,15 +261,15 @@ document.addEventListener("DOMContentLoaded", function () {
         switch (Number(idSituacao)) {
             case 1:
             case 2:
-                return '<div class="text-muted mt-1 fw-semibold bi bi-hourglass-split" style="font-size: 0.85rem;"> Previsão: 1h a 3h30 min</div>';
+                return '<div class="text-muted fw-semibold bi bi-hourglass-split" style="font-size: 0.9rem;"> Previsão: 1h a 3h30 min</div>';
             case 5:
-                return '<div class="text-primary mt-1 fw-semibold bi bi-scooter" style="font-size: 0.85rem;"> Seu pedido saiu para entrega!</div>';
+                return '<div class="text-primary fw-semibold bi bi-scooter" style="font-size: 0.9rem;"> Seu pedido saiu para entrega!</div>';
             case 3:
-                return '<div class="text-primary mt-1 fw-semibold bi bi-shop" style="font-size: 0.85rem;"> Pronto! Disponível para retirada na loja.</div>';
+                return '<div class="text-primary fw-semibold bi bi-shop" style="font-size: 0.9rem;"> Pronto! Disponível para retirada na loja.</div>';
             case 4:
-                return '<div class="text-success mt-1 fw-semibold bi bi-check-circle-fill" style="font-size: 0.85rem;"> Pedido entregue</div>';
+                return '<div class="text-success fw-semibold bi bi-check-circle-fill" style="font-size: 0.9rem;"> Pedido entregue</div>';
             case 6:
-                return '<div class="text-danger mt-1 fw-semibold bi bi-x-circle-fill" style="font-size: 0.85rem;"> Pedido cancelado</div>';
+                return '<div class="text-danger fw-semibold bi bi-x-circle-fill" style="font-size: 0.9rem;"> Pedido cancelado</div>';
             default:
                 return "";
         }
@@ -328,12 +328,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (resp.ok) {
                     const dados = await resp.json();
                     if (dados.sucesso) {
-                        const tr = form.closest("tr");
-                        if (tr) {
-                            tr.dataset.situacaoId = dados.idSituacao;
-                            const badge = tr.querySelector(".badge-status-admin");
+                        const itemPedido = form.closest("[data-pedido-id]");
+                        if (itemPedido) {
+                            itemPedido.dataset.situacaoId = dados.idSituacao;
+                            const badge = itemPedido.querySelector(".badge-status-admin");
                             if (badge) {
-                                badge.className = `badge ${obterClasseBadgeStatus(dados.idSituacao)} px-3 py-2 badge-status-admin`;
+                                badge.className = `badge ${obterClasseBadgeStatus(dados.idSituacao)} px-3 py-2 rounded-pill badge-status-admin`;
                                 badge.textContent = dados.descricao;
                             }
                         }
@@ -374,11 +374,11 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Inicializa o mapa com os pedidos já renderizados na tela MeusPedidos (se estiver nela)
-    const linhasMeusPedidos = document.querySelectorAll("#tabelaMeusPedidosBody tr[data-pedido-id]");
+    const linhasMeusPedidos = document.querySelectorAll("#tabelaMeusPedidosBody [data-pedido-id]");
     if (linhasMeusPedidos.length > 0) {
         const mapaInicial = carregarMapaStatusSalvo();
-        linhasMeusPedidos.forEach(tr => {
-            mapaInicial[tr.dataset.pedidoId] = Number(tr.dataset.situacaoId);
+        linhasMeusPedidos.forEach(item => {
+            mapaInicial[item.dataset.pedidoId] = Number(item.dataset.situacaoId);
         });
         salvarMapaStatus(mapaInicial);
     }
@@ -417,24 +417,27 @@ document.addEventListener("DOMContentLoaded", function () {
                     );
                 }
 
-                // Se o cliente estiver com a tela MeusPedidos aberta, atualiza o DOM sem recarregar
-                const tr = document.querySelector(`#tabelaMeusPedidosBody tr[data-pedido-id="${p.idPedido}"]`);
-                if (tr && Number(tr.dataset.situacaoId) !== Number(p.idSituacao)) {
-                    tr.dataset.situacaoId = p.idSituacao;
+                // Se o cliente estiver com a tela MeusPedidos aberta, atualiza o Card no DOM sem recarregar
+                const itemCard = document.querySelector(`#tabelaMeusPedidosBody [data-pedido-id="${p.idPedido}"]`);
+                if (itemCard && Number(itemCard.dataset.situacaoId) !== Number(p.idSituacao)) {
+                    itemCard.dataset.situacaoId = p.idSituacao;
 
-                    const badge = tr.querySelector(".badge-status-pedido");
+                    const badge = itemCard.querySelector(".badge-status-pedido");
                     if (badge) {
-                        badge.className = `badge ${obterClasseBadgeStatus(p.idSituacao)} px-3 py-2 badge-status-pedido`;
+                        badge.className = `badge ${obterClasseBadgeStatus(p.idSituacao)} px-3 py-2 rounded-pill badge-status-pedido`;
                         badge.textContent = p.descricaoSituacao;
                     }
 
-                    const detalhe = tr.querySelector(".detalhe-status-pedido");
+                    const detalhe = itemCard.querySelector(".detalhe-status-pedido");
                     if (detalhe) {
                         detalhe.innerHTML = obterHtmlDetalheStatus(p.idSituacao);
                     }
 
-                    tr.classList.add("table-active");
-                    setTimeout(() => tr.classList.remove("table-active"), 2500);
+                    const cardInterno = itemCard.querySelector(".card");
+                    if (cardInterno) {
+                        cardInterno.classList.add("border", "border-primary", "border-2");
+                        setTimeout(() => cardInterno.classList.remove("border", "border-primary", "border-2"), 2500);
+                    }
                 }
             });
 
@@ -476,8 +479,8 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             if (Array.isArray(dados.pedidos)) {
-                const linhasAtuais = document.querySelectorAll("#tabelaGerenciarPedidosBody tr[data-pedido-id]");
-                // Se entrou um pedido novo que ainda não está na tabela, recarrega suavemente ou avisa
+                const linhasAtuais = document.querySelectorAll("#tabelaGerenciarPedidosBody [data-pedido-id]");
+                // Se entrou um pedido novo que ainda não está na tela, recarrega suavemente ou avisa
                 if (linhasAtuais.length > 0 && dados.pedidos.length > linhasAtuais.length) {
                     exibirToastSincronizacao("Novo pedido recebido! Atualizando painel...", false);
                     setTimeout(() => window.location.reload(), 1200);
@@ -485,15 +488,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 }
 
                 dados.pedidos.forEach(p => {
-                    const tr = document.querySelector(`#tabelaGerenciarPedidosBody tr[data-pedido-id="${p.idPedido}"]`);
-                    if (tr && Number(tr.dataset.situacaoId) !== Number(p.idSituacao)) {
-                        tr.dataset.situacaoId = p.idSituacao;
-                        const badge = tr.querySelector(".badge-status-admin");
+                    const itemCard = document.querySelector(`#tabelaGerenciarPedidosBody [data-pedido-id="${p.idPedido}"]`);
+                    if (itemCard && Number(itemCard.dataset.situacaoId) !== Number(p.idSituacao)) {
+                        itemCard.dataset.situacaoId = p.idSituacao;
+                        const badge = itemCard.querySelector(".badge-status-admin");
                         if (badge) {
-                            badge.className = `badge ${obterClasseBadgeStatus(p.idSituacao)} px-3 py-2 badge-status-admin`;
+                            badge.className = `badge ${obterClasseBadgeStatus(p.idSituacao)} px-3 py-2 rounded-pill badge-status-admin`;
                             badge.textContent = p.descricaoSituacao;
                         }
-                        const select = tr.querySelector(".select-status-pedido");
+                        const select = itemCard.querySelector(".select-status-pedido");
                         if (select) {
                             select.value = String(p.idSituacao);
                         }

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pedie-cache-v3';
+const CACHE_NAME = 'pedie-cache-v4';
 const urlsToCache = [
     '/css/site.css',
     '/lib/bootstrap/dist/css/bootstrap.min.css',
