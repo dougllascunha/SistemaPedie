@@ -20,4 +20,12 @@ public class PedieDbContext : DbContext
     public DbSet<Endereco> Enderecos { get; set; }
     public DbSet<Situacao> Situacoes { get; set; }
     public DbSet<Promocao> Promocoes { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Pedido>()
+            .ToTable("Pedido", tableBuilder => tableBuilder.HasTrigger("trg_AuditoriaStatusPedido"));
+
+        base.OnModelCreating(modelBuilder);
+    }
 }
